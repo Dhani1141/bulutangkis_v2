@@ -1,27 +1,32 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Users, Plus, Play, Layers, Shuffle, Trash2 } from 'lucide-react'
+import { Users, Play, Layers, Shuffle, Trash2, History } from 'lucide-react'
 import GlassCard from '../components/GlassCard'
-import { createSession, deleteSession } from '../lib/firebaseHelpers'
+import { createSession, deleteSession, getHistoricalPlayers } from '../lib/firebaseHelpers'
 
 export default function SetupPage() {
   const navigate = useNavigate()
   const [sessionId, setSessionId] = useState('')
   const [fieldCount, setFieldCount] = useState(1)
   const [players, setPlayers] = useState([])
+  const [historicalPlayers, setHistoricalPlayers] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [isResetting, setIsResetting] = useState(false)
   const [error, setError] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
 
-  // Auto-generate Session ID from current date
+  // Auto-generate Session ID from current date & load history
   useEffect(() => {
     const now = new Date()
     const dd = String(now.getDate()).padStart(2, '0')
     const mm = String(now.getMonth() + 1).padStart(2, '0')
     const yyyy = now.getFullYear()
     setSessionId(`Session-${dd}-${mm}-${yyyy}`)
+
+    getHistoricalPlayers()
+      .then((data) => setHistoricalPlayers(data))
+      .catch((err) => console.error('Failed to load history', err))
   }, [])
 
   const updatePlayer = (index, value) => {
@@ -30,7 +35,11 @@ export default function SetupPage() {
     setPlayers(updated)
   }
 
-  const addPlayer = () => setPlayers([...players, ''])
+  const addHistoricalPlayer = (name) => {
+    if (!players.includes(name)) {
+      setPlayers([...players, name])
+    }
+  }
 
   const removePlayer = (index) => {
     setPlayers(players.filter((_, i) => i !== index))
@@ -123,6 +132,7 @@ export default function SetupPage() {
   }
 
   const validCount = players.filter((p) => p.trim()).length
+  const availableHistory = historicalPlayers.filter((p) => !players.includes(p))
 
   return (
     <motion.div
@@ -195,7 +205,7 @@ export default function SetupPage() {
                 className={`flex-1 py-3 rounded-xl font-semibold transition-all duration-300 border ${
                   fieldCount === count
                     ? 'bg-accent-blue/20 border-accent-blue/50 text-accent-blue shadow-lg shadow-accent-blue/10'
-                    : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/50'
+                    : 'bg-[#15151e] border-white/10 hover:bg-white/5 text-white/50'
                 }`}
               >
                 {count} Court{count > 1 ? 's' : ''}
@@ -229,17 +239,17 @@ export default function SetupPage() {
                   }
                 }
               }}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-accent-blue focus:bg-white/10 transition-all"
+              className="w-full bg-[#15151e] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-accent-blue focus:bg-[#1a1a24] transition-all"
             />
           </div>
 
           {/* Player Tags */}
-          <div className="flex flex-wrap gap-2 max-h-[300px] overflow-y-auto">
+          <div className="flex flex-wrap gap-2 max-h-[300px] overflow-y-auto mb-2">
             {players.map((player, index) => (
               player.trim() !== '' && (
                 <div
                   key={index}
-                  className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5"
+                  className="flex items-center gap-2 bg-[#252535] border border-white/10 rounded-lg px-3 py-1.5"
                 >
                   <span className="text-white/90 text-sm font-medium">{player}</span>
                   <button
@@ -252,6 +262,27 @@ export default function SetupPage() {
               )
             ))}
           </div>
+
+          {/* Historical Players (Quick Add) */}
+          {availableHistory.length > 0 && (
+            <div className="pt-4 border-t border-white/10 mt-4">
+              <h3 className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <History size={12} />
+                Recent Players
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {availableHistory.map((p, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => addHistoricalPlayer(p)}
+                    className="text-xs bg-white/5 border border-white/5 hover:border-accent-blue/40 hover:bg-accent-blue/10 text-white/50 hover:text-white px-3 py-1.5 rounded-full transition-all duration-200"
+                  >
+                    + {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </GlassCard>
 
         {/* ── Error & Success ── */}

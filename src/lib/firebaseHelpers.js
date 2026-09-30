@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, updateDoc, increment, deleteDoc, collection, getDocs } from 'firebase/firestore'
+import { doc, setDoc, getDoc, updateDoc, increment, deleteDoc, collection, getDocs, arrayUnion } from 'firebase/firestore'
 import { db } from '../firebase'
 
 /**
@@ -6,7 +6,7 @@ import { db } from '../firebase'
  *
  * @param {string} sessionId — e.g. "Session-30-09-2026"
  * @param {number} fieldCount — 1 or 2
- * @param {Object} fields — { field1: { players, teams }, field2?: { players, teams } }
+ * @param {Object} fields — { field1: { players }, field2?: { players } }
  */
 export async function createSession(sessionId, fieldCount, fields) {
   // Use sessionId as the collection, and 'data' as the document
@@ -18,10 +18,13 @@ export async function createSession(sessionId, fieldCount, fields) {
     status: 'active',
   }
 
+  const allPlayersThisSession = new Set()
+
   for (const [fieldKey, fieldData] of Object.entries(fields)) {
     const playerStats = {}
     fieldData.players.forEach((player) => {
       playerStats[player] = { total_matches: 0, total_wins: 0 }
+      allPlayersThisSession.add(player)
     })
 
     sessionData[fieldKey] = {
@@ -32,7 +35,26 @@ export async function createSession(sessionId, fieldCount, fields) {
   }
 
   await setDoc(sessionRef, sessionData)
+
+  // Save to global history so we can load them next week
+  const globalRef = doc(db, 'global', 'players')
+  await setDoc(globalRef, {
+    allPlayers: arrayUnion(...Array.from(allPlayersThisSession))
+  }, { merge: true })
+
   return sessionData
+}
+
+/**
+ * Fetch all historical players
+ */
+export async function getHistoricalPlayers() {
+  const globalRef = doc(db, 'global', 'players')
+  const snap = await getDoc(globalRef)
+  if (snap.exists()) {
+    return snap.data().allPlayers || []
+  }
+  return []
 }
 
 /**
