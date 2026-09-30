@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, updateDoc, increment, deleteDoc } from 'firebase/firestore'
+import { doc, setDoc, getDoc, updateDoc, increment, deleteDoc, collection, getDocs } from 'firebase/firestore'
 import { db } from '../firebase'
 
 /**
@@ -9,7 +9,8 @@ import { db } from '../firebase'
  * @param {Object} fields — { field1: { players, teams }, field2?: { players, teams } }
  */
 export async function createSession(sessionId, fieldCount, fields) {
-  const sessionRef = doc(db, 'sessions', sessionId)
+  // Use sessionId as the collection, and 'data' as the document
+  const sessionRef = doc(db, sessionId, 'data')
 
   const sessionData = {
     createdAt: new Date().toISOString(),
@@ -39,7 +40,7 @@ export async function createSession(sessionId, fieldCount, fields) {
  * Fetch session data from Firestore.
  */
 export async function getSession(sessionId) {
-  const sessionRef = doc(db, 'sessions', sessionId)
+  const sessionRef = doc(db, sessionId, 'data')
   const snap = await getDoc(sessionRef)
   return snap.exists() ? snap.data() : null
 }
@@ -60,7 +61,7 @@ export async function submitMatchResult(
   winnerPlayers,
   allPlayers,
 ) {
-  const sessionRef = doc(db, 'sessions', sessionId)
+  const sessionRef = doc(db, sessionId, 'data')
   const updates = {}
 
   // +1 total_matches for all 4 players
@@ -80,7 +81,7 @@ export async function submitMatchResult(
  * Mark a field session as ended.
  */
 export async function endFieldSession(sessionId, fieldKey) {
-  const sessionRef = doc(db, 'sessions', sessionId)
+  const sessionRef = doc(db, sessionId, 'data')
   await updateDoc(sessionRef, {
     [`${fieldKey}.status`]: 'ended',
   })
@@ -88,8 +89,16 @@ export async function endFieldSession(sessionId, fieldKey) {
 
 /**
  * Delete a session completely (Reset/Testing feature).
+ * Deletes all documents in the Session-DD-MM-YYYY collection.
  */
 export async function deleteSession(sessionId) {
-  const sessionRef = doc(db, 'sessions', sessionId)
-  await deleteDoc(sessionRef)
+  const colRef = collection(db, sessionId)
+  const snapshot = await getDocs(colRef)
+  
+  const deletePromises = []
+  snapshot.forEach((document) => {
+    deletePromises.push(deleteDoc(doc(db, sessionId, document.id)))
+  })
+  
+  await Promise.all(deletePromises)
 }
