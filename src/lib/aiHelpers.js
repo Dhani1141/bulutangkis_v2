@@ -36,7 +36,28 @@ Instructions:
 - End with a catchy sign-off line.`
 
   try {
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
+    // Step 1: Dynamically find a supported model
+    const modelsUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+    const modelsResponse = await fetch(modelsUrl);
+    
+    if (!modelsResponse.ok) {
+      const err = await modelsResponse.text();
+      throw new Error(`Failed to fetch models: ${modelsResponse.status} - ${err}`);
+    }
+
+    const modelsData = await modelsResponse.json();
+    const supportedModel = modelsData.models?.find(model => 
+      model.supportedGenerationMethods?.includes('generateContent')
+    );
+
+    if (!supportedModel) {
+      throw new Error('No models found that support generateContent.');
+    }
+
+    const extractedModelName = supportedModel.name; // e.g. "models/gemini-1.5-flash"
+
+    // Step 2: Use the exact model name for the POST request
+    const url = `https://generativelanguage.googleapis.com/v1beta/${extractedModelName}:generateContent?key=${apiKey}`;
 
     const response = await fetch(url, {
       method: 'POST',
