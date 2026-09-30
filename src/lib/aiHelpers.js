@@ -62,7 +62,13 @@ Instructions:
     if (!res.ok) {
       const err = await res.text()
       console.error('AI API error:', res.status, err)
-      return `The commentator microphone malfunctioned (HTTP ${res.status}). They'll be back next session!`
+      
+      let parsedErr = err
+      try {
+        parsedErr = JSON.parse(err).error.message
+      } catch (e) {}
+
+      return `AI Error (HTTP ${res.status}): ${parsedErr}`
     }
 
     const data = await res.json()

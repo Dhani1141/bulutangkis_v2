@@ -132,7 +132,13 @@ export default function SetupPage() {
   }
 
   const validCount = players.filter((p) => p.trim()).length
-  const availableHistory = historicalPlayers.filter((p) => !players.includes(p))
+  
+  // Filter out already selected players AND dummy test data (purely numeric strings like "1", "2", "3")
+  const availableHistory = historicalPlayers.filter((p) => {
+    if (players.includes(p)) return false
+    if (!isNaN(Number(p)) && p.trim() !== '') return false // Ignore if it's just a number
+    return true
+  })
 
   return (
     <motion.div
