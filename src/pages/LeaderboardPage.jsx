@@ -13,6 +13,7 @@ export default function LeaderboardPage() {
   const [loading, setLoading] = useState(true)
   const [aiCommentary, setAiCommentary] = useState('')
   const [isLoadingAi, setIsLoadingAi] = useState(false)
+  const [aiLoadingMsg, setAiLoadingMsg] = useState('The commentator is clearing their throat...')
 
   useEffect(() => {
     const loadSession = async () => {
@@ -39,7 +40,7 @@ export default function LeaderboardPage() {
     loadSession()
   }, [navigate])
 
-      useEffect(() => {
+  useEffect(() => {
     if (!sessionData || !sessionData.playerStats) return
 
     const fetchCommentary = async () => {
@@ -57,7 +58,10 @@ export default function LeaderboardPage() {
       // Sort highest win rate first
       playersList.sort((a, b) => b.winRate - a.winRate)
 
-      const commentary = await getAICommentary(playersList, "the entire session")
+      const commentary = await getAICommentary(playersList, "the entire session", (msg) => {
+        setAiLoadingMsg(msg);
+      })
+      
       setAiCommentary(commentary)
       setIsLoadingAi(false)
     }
@@ -135,7 +139,7 @@ export default function LeaderboardPage() {
           {isLoadingAi ? (
             <div className="flex items-center gap-3 text-white/40">
               <div className="w-4 h-4 border-2 border-accent-purple/30 border-t-accent-purple rounded-full animate-spin" />
-              <p className="text-sm animate-pulse">The commentator is clearing their throat...</p>
+              <p className="text-sm animate-pulse">{aiLoadingMsg}</p>
             </div>
           ) : (
             <p className="text-white/80 leading-relaxed italic border-l-2 border-accent-purple/50 pl-4">
