@@ -328,7 +328,7 @@ export default function SetupPage() {
         </motion.button>
 
         {/* ── Global Match History (All-Time Stats) ── */}
-        {globalStats.length > 0 && (
+        {globalStats.filter(stat => stat.total_matches > 0).length > 0 && (
           <GlassCard>
             <h2 className="text-lg font-semibold text-white/80 mb-4 flex items-center gap-2">
               <Trophy size={20} className="text-accent-orange" />
@@ -345,8 +345,10 @@ export default function SetupPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
-                  {globalStats.map((stat, idx) => {
-                    const wr = stat.total_matches ? ((stat.total_wins / stat.total_matches) * 100).toFixed(0) : 0;
+                  {globalStats
+                    .filter(stat => stat.total_matches > 0)
+                    .map((stat, idx) => {
+                    const wr = ((stat.total_wins / stat.total_matches) * 100).toFixed(0);
                     return (
                       <tr key={idx} className="hover:bg-white/5 transition-colors">
                         <td className="px-4 py-3 font-medium text-white/90">{stat.name}</td>
