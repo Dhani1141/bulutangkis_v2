@@ -183,6 +183,8 @@
   },
   "active": "513e4b8f80d3a262",
   "lastOpenFiles": [
+    "vite.config.js.timestamp-1790755097773-5d4e9e75f6f19.mjs",
+    "dist/assets/index-BFDGLMuL.js",
     "node_modules/lucide-react/dist/esm/icons/rectangle-horizontal.js",
     "node_modules/lucide-react/dist/esm/icons/receipt-text.js",
     "node_modules/lucide-react/dist/esm/icons/receipt-swiss-franc.js",
@@ -192,8 +194,6 @@
     "node_modules/lucide-react/dist/esm/icons/receipt-japanese-yen.js",
     "node_modules/lucide-react/dist/esm/icons/receipt-indian-rupee.js",
     "node_modules/lucide-react/dist/esm/icons/receipt-euro.js",
-    "node_modules/lucide-react/dist/esm/icons/receipt-cent.js",
-    "node_modules/lucide-react/dist/esm/icons/ratio.js",
     "node_modules/websocket-extensions/lib/pipeline/README.md",
     "node_modules/protobufjs/ext/descriptor/README.md",
     "node_modules/protobufjs/ext/debug/README.md",

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Users, Plus, Play, Layers, Shuffle, Trash2 } from 'lucide-react'
 import GlassCard from '../components/GlassCard'
-import PlayerInput from '../components/PlayerInput'
 import { createSession, deleteSession } from '../lib/firebaseHelpers'
 import { generateTeams } from '../lib/matchmaking'
 
@@ -11,7 +10,7 @@ export default function SetupPage() {
   const navigate = useNavigate()
   const [sessionId, setSessionId] = useState('')
   const [fieldCount, setFieldCount] = useState(1)
-  const [players, setPlayers] = useState(['', '', '', ''])
+  const [players, setPlayers] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [isResetting, setIsResetting] = useState(false)
   const [error, setError] = useState('')
@@ -35,7 +34,6 @@ export default function SetupPage() {
   const addPlayer = () => setPlayers([...players, ''])
 
   const removePlayer = (index) => {
-    if (players.length <= 4) return
     setPlayers(players.filter((_, i) => i !== index))
   }
 
@@ -219,27 +217,44 @@ export default function SetupPage() {
             </span>
           </h2>
 
-          <div className="space-y-3 mb-4 max-h-[400px] overflow-y-auto pr-1">
-            {players.map((player, index) => (
-              <PlayerInput
-                key={index}
-                index={index}
-                value={player}
-                onChange={updatePlayer}
-                onRemove={removePlayer}
-                canRemove={players.length > 4}
-              />
-            ))}
+          {/* Single Input Field */}
+          <div className="mb-4">
+            <input
+              type="text"
+              placeholder="Type player name and press Enter..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  const val = e.target.value.trim()
+                  if (val && !players.includes(val)) {
+                    setPlayers([...players, val])
+                    e.target.value = ''
+                  }
+                }
+              }}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-accent-blue focus:bg-white/10 transition-all"
+            />
           </div>
 
-          <button
-            type="button"
-            onClick={addPlayer}
-            className="glass-button w-full text-white/50 hover:text-accent-blue"
-          >
-            <Plus size={18} />
-            Add Player
-          </button>
+          {/* Player Tags */}
+          <div className="flex flex-wrap gap-2 max-h-[300px] overflow-y-auto">
+            {players.map((player, index) => (
+              player.trim() !== '' && (
+                <div
+                  key={index}
+                  className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5"
+                >
+                  <span className="text-white/90 text-sm font-medium">{player}</span>
+                  <button
+                    onClick={() => removePlayer(index)}
+                    className="text-white/30 hover:text-red-400 transition-colors"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              )
+            ))}
+          </div>
         </GlassCard>
 
         {/* ── Error & Success ── */}
