@@ -1,22 +1,22 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Users, Play, Layers, Shuffle, Trash2, History } from 'lucide-react'
+import { Users, Play, Layers, Shuffle, Trash2, History, Trophy } from 'lucide-react'
 import GlassCard from '../components/GlassCard'
-import { createSession, deleteSession, getHistoricalPlayers } from '../lib/firebaseHelpers'
+import { createSession, deleteSession, getGlobalPlayerStats } from '../lib/firebaseHelpers'
 
 export default function SetupPage() {
   const navigate = useNavigate()
   const [sessionId, setSessionId] = useState('')
   const [fieldCount, setFieldCount] = useState(1)
   const [players, setPlayers] = useState([])
-  const [historicalPlayers, setHistoricalPlayers] = useState([])
+  const [globalStats, setGlobalStats] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [isResetting, setIsResetting] = useState(false)
   const [error, setError] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
 
-  // Auto-generate Session ID from current date & load history
+  // Auto-generate Session ID from current date & load global stats
   useEffect(() => {
     const now = new Date()
     const dd = String(now.getDate()).padStart(2, '0')
@@ -24,9 +24,18 @@ export default function SetupPage() {
     const yyyy = now.getFullYear()
     setSessionId(`Session-${dd}-${mm}-${yyyy}`)
 
-    getHistoricalPlayers()
-      .then((data) => setHistoricalPlayers(data))
-      .catch((err) => console.error('Failed to load history', err))
+    getGlobalPlayerStats()
+      .then((data) => {
+        // Sort by win rate / total matches
+        data.sort((a, b) => {
+           const wrA = a.total_matches ? a.total_wins / a.total_matches : 0
+           const wrB = b.total_matches ? b.total_wins / b.total_matches : 0
+           if (wrB !== wrA) return wrB - wrA
+           return b.total_matches - a.total_matches
+        })
+        setGlobalStats(data)
+      })
+      .catch((err) => console.error('Failed to load global stats', err))
   }, [])
 
   const updatePlayer = (index, value) => {
@@ -133,12 +142,14 @@ export default function SetupPage() {
 
   const validCount = players.filter((p) => p.trim()).length
   
-  // Filter out already selected players AND dummy test data (purely numeric strings like "1", "2", "3")
-  const availableHistory = historicalPlayers.filter((p) => {
-    if (players.includes(p)) return false
-    if (!isNaN(Number(p)) && p.trim() !== '') return false // Ignore if it's just a number
-    return true
-  })
+  // Filter out already selected players AND dummy test data using Regex
+  const availableHistory = globalStats
+    .map(stat => stat.name)
+    .filter(name => {
+      if (players.includes(name)) return false
+      if (/^\d+$/.test(name)) return false // Ignore if it consists ONLY of numbers
+      return true
+    })
 
   return (
     <motion.div
@@ -316,7 +327,7 @@ export default function SetupPage() {
         <motion.button
           onClick={handleStart}
           disabled={isLoading}
-          className="glass-button-success w-full py-4 text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+          className="glass-button-success w-full py-4 text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed mb-8"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -329,6 +340,45 @@ export default function SetupPage() {
             </>
           )}
         </motion.button>
+
+        {/* ── Global Match History (All-Time Stats) ── */}
+        {globalStats.length > 0 && (
+          <GlassCard>
+            <h2 className="text-lg font-semibold text-white/80 mb-4 flex items-center gap-2">
+              <Trophy size={20} className="text-accent-orange" />
+              All-Time Global Stats
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm text-white/70">
+                <thead className="bg-[#15151e] text-white/50 border-b border-white/10 uppercase text-xs">
+                  <tr>
+                    <th className="px-4 py-3 font-semibold rounded-tl-lg">Player</th>
+                    <th className="px-4 py-3 font-semibold text-center">Matches</th>
+                    <th className="px-4 py-3 font-semibold text-center">Win Rate</th>
+                    <th className="px-4 py-3 font-semibold text-right rounded-tr-lg">Last Played</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {globalStats.map((stat, idx) => {
+                    const wr = stat.total_matches ? ((stat.total_wins / stat.total_matches) * 100).toFixed(0) : 0;
+                    return (
+                      <tr key={idx} className="hover:bg-white/5 transition-colors">
+                        <td className="px-4 py-3 font-medium text-white/90">{stat.name}</td>
+                        <td className="px-4 py-3 text-center">{stat.total_matches}</td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`px-2 py-1 rounded text-xs font-bold ${wr >= 50 ? 'text-emerald-400 bg-emerald-400/10' : 'text-white/40 bg-white/5'}`}>
+                            {wr}%
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right text-white/40 text-xs">{stat.last_played_date || '-'}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </GlassCard>
+        )}
       </div>
     </motion.div>
   )

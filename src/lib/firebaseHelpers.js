@@ -96,6 +96,37 @@ export async function submitMatchResult(
   })
 
   await updateDoc(sessionRef, updates)
+
+  // -- GLOBAL STATS UPDATE --
+  const dateStr = new Date().toLocaleDateString()
+  
+  // Update all players (match count + date)
+  const globalPromises = allPlayers.map(async (player) => {
+    const isWinner = winnerPlayers.includes(player)
+    const playerRef = doc(db, 'global_players', player)
+    
+    await setDoc(playerRef, {
+      name: player,
+      total_matches: increment(1),
+      total_wins: isWinner ? increment(1) : increment(0),
+      last_played_date: dateStr
+    }, { merge: true })
+  })
+
+  await Promise.all(globalPromises)
+}
+
+/**
+ * Fetch all-time global player stats
+ */
+export async function getGlobalPlayerStats() {
+  const colRef = collection(db, 'global_players')
+  const snapshot = await getDocs(colRef)
+  const players = []
+  snapshot.forEach(doc => {
+    players.push({ id: doc.id, ...doc.data() })
+  })
+  return players
 }
 
 /**
