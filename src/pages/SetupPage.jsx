@@ -117,9 +117,7 @@ export default function SetupPage() {
       navigate('/match')
     } catch (err) {
       console.error(err)
-      setError(
-        'Failed to create session. Check your Firebase configuration in src/firebase.js',
-      )
+      setError(`Failed to create session: ${err.message}`)
     } finally {
       setIsLoading(false)
     }
