@@ -70,6 +70,7 @@ export default function SetupPage() {
       localStorage.removeItem('fieldCount')
       setSuccessMsg(`Successfully cleared dummy data for ${sessionId}.`)
       setTimeout(() => setSuccessMsg(''), 4000)
+      window.location.reload()
     } catch (err) {
       console.error('Failed to reset session:', err)
       setError(`Failed to clear database data: ${err.message}`)
