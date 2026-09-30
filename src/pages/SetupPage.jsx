@@ -4,7 +4,6 @@ import { motion } from 'framer-motion'
 import { Users, Plus, Play, Layers, Shuffle, Trash2 } from 'lucide-react'
 import GlassCard from '../components/GlassCard'
 import { createSession, deleteSession } from '../lib/firebaseHelpers'
-import { generateTeams } from '../lib/matchmaking'
 
 export default function SetupPage() {
   const navigate = useNavigate()
@@ -55,7 +54,7 @@ export default function SetupPage() {
       setTimeout(() => setSuccessMsg(''), 4000)
     } catch (err) {
       console.error('Failed to reset session:', err)
-      setError('Failed to clear database data.')
+      setError(`Failed to clear database data: ${err.message}`)
     } finally {
       setIsResetting(false)
     }
@@ -99,7 +98,7 @@ export default function SetupPage() {
       const fields = {}
 
       if (fieldCount === 1) {
-        fields.field1 = { players: valid, teams: generateTeams(valid) }
+        fields.field1 = { players: valid }
       } else {
         // Split evenly — ensure each half is even
         const half = Math.floor(valid.length / 2)
@@ -107,8 +106,8 @@ export default function SetupPage() {
         const f1 = valid.slice(0, adjusted)
         const f2 = valid.slice(adjusted)
 
-        fields.field1 = { players: f1, teams: generateTeams(f1) }
-        fields.field2 = { players: f2, teams: generateTeams(f2) }
+        fields.field1 = { players: f1 }
+        fields.field2 = { players: f2 }
       }
 
       await createSession(sessionId, fieldCount, fields)

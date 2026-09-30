@@ -27,7 +27,6 @@ export async function createSession(sessionId, fieldCount, fields) {
     sessionData[fieldKey] = {
       status: 'active',
       players: fieldData.players,
-      teams: fieldData.teams,
       playerStats,
     }
   }
