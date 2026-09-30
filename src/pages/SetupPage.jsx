@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Users, Plus, Play, Layers, Shuffle } from 'lucide-react'
+import { Users, Plus, Play, Layers, Shuffle, Trash2 } from 'lucide-react'
 import GlassCard from '../components/GlassCard'
 import PlayerInput from '../components/PlayerInput'
-import { createSession } from '../lib/firebaseHelpers'
+import { createSession, deleteSession } from '../lib/firebaseHelpers'
 import { generateTeams } from '../lib/matchmaking'
 
 export default function SetupPage() {
@@ -13,7 +13,9 @@ export default function SetupPage() {
   const [fieldCount, setFieldCount] = useState(1)
   const [players, setPlayers] = useState(['', '', '', ''])
   const [isLoading, setIsLoading] = useState(false)
+  const [isResetting, setIsResetting] = useState(false)
   const [error, setError] = useState('')
+  const [successMsg, setSuccessMsg] = useState('')
 
   // Auto-generate Session ID from current date
   useEffect(() => {
@@ -35,6 +37,30 @@ export default function SetupPage() {
   const removePlayer = (index) => {
     if (players.length <= 4) return
     setPlayers(players.filter((_, i) => i !== index))
+  }
+
+  const handleResetSession = async () => {
+    if (!sessionId) return
+    const confirmed = window.confirm(
+      `Are you sure you want to completely DELETE all dummy data for ${sessionId}? This action cannot be undone.`
+    )
+    if (!confirmed) return
+
+    setIsResetting(true)
+    setError('')
+    setSuccessMsg('')
+    try {
+      await deleteSession(sessionId)
+      localStorage.removeItem('currentSessionId')
+      localStorage.removeItem('fieldCount')
+      setSuccessMsg(`Successfully cleared dummy data for ${sessionId}.`)
+      setTimeout(() => setSuccessMsg(''), 4000)
+    } catch (err) {
+      console.error('Failed to reset session:', err)
+      setError('Failed to clear database data.')
+    } finally {
+      setIsResetting(false)
+    }
   }
 
   const validate = () => {
@@ -67,6 +93,8 @@ export default function SetupPage() {
   const handleStart = async () => {
     if (!validate()) return
     setIsLoading(true)
+    setError('')
+    setSuccessMsg('')
 
     try {
       const valid = players.filter((p) => p.trim() !== '').map((p) => p.trim())
@@ -108,10 +136,10 @@ export default function SetupPage() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-2xl pt-8 pb-12">
         {/* ── Header ── */}
         <motion.div
-          className="text-center mb-10"
+          className="text-center mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
@@ -122,6 +150,27 @@ export default function SetupPage() {
           <p className="text-white/40 text-lg">
             Badminton Matchmaker &amp; Score Tracker
           </p>
+        </motion.div>
+
+        {/* ── Reset Session Data (Testing) ── */}
+        <motion.div 
+          className="mb-8 flex justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <button
+            onClick={handleResetSession}
+            disabled={isResetting || !sessionId}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-all text-sm font-semibold disabled:opacity-50"
+          >
+            {isResetting ? (
+              <div className="w-4 h-4 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin" />
+            ) : (
+              <Trash2 size={16} />
+            )}
+            Clear Dummy Data (Reset DB)
+          </button>
         </motion.div>
 
         {/* ── Session ID ── */}
@@ -193,7 +242,7 @@ export default function SetupPage() {
           </button>
         </GlassCard>
 
-        {/* ── Error ── */}
+        {/* ── Error & Success ── */}
         {error && (
           <motion.div
             className="mb-5 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"
@@ -201,6 +250,16 @@ export default function SetupPage() {
             animate={{ opacity: 1, y: 0 }}
           >
             {error}
+          </motion.div>
+        )}
+        
+        {successMsg && (
+          <motion.div
+            className="mb-5 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            {successMsg}
           </motion.div>
         )}
 

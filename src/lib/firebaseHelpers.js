@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, updateDoc, increment } from 'firebase/firestore'
+import { doc, setDoc, getDoc, updateDoc, increment, deleteDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 
 /**
@@ -84,4 +84,12 @@ export async function endFieldSession(sessionId, fieldKey) {
   await updateDoc(sessionRef, {
     [`${fieldKey}.status`]: 'ended',
   })
+}
+
+/**
+ * Delete a session completely (Reset/Testing feature).
+ */
+export async function deleteSession(sessionId) {
+  const sessionRef = doc(db, 'sessions', sessionId)
+  await deleteDoc(sessionRef)
 }
