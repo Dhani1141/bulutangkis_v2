@@ -39,26 +39,13 @@ export default function LeaderboardPage() {
     loadSession()
   }, [navigate])
 
-  useEffect(() => {
-    if (!sessionData) return
+      useEffect(() => {
+    if (!sessionData || !sessionData.playerStats) return
 
     const fetchCommentary = async () => {
       setIsLoadingAi(true)
       
-      // Aggregate all players from all fields
-      const allStats = {}
-      if (sessionData.field1?.playerStats) {
-        Object.assign(allStats, sessionData.field1.playerStats)
-      }
-      if (sessionData.field2?.playerStats) {
-        Object.entries(sessionData.field2.playerStats).forEach(([name, stats]) => {
-          if (!allStats[name]) {
-            allStats[name] = { total_matches: 0, total_wins: 0 }
-          }
-          allStats[name].total_matches += stats.total_matches
-          allStats[name].total_wins += stats.total_wins
-        })
-      }
+      const allStats = sessionData.playerStats
 
       const playersList = Object.entries(allStats).map(([name, stats]) => ({
         name,
@@ -90,7 +77,6 @@ export default function LeaderboardPage() {
   if (!sessionData) return null
 
   const sessionId = localStorage.getItem('currentSessionId')
-  const fieldCount = sessionData.fieldCount
 
   return (
     <motion.div
@@ -126,24 +112,12 @@ export default function LeaderboardPage() {
         </motion.p>
       </div>
 
-      {/* ── Leaderboards — split-screen if 2 fields ── */}
-      <div
-        className={`grid gap-8 ${
-          fieldCount === 2 ? 'md:grid-cols-2' : 'max-w-2xl mx-auto'
-        } mb-8`}
-      >
-        {sessionData.field1 && (
-          <LeaderboardPanel
-            fieldKey="field1"
-            playerStats={sessionData.field1.playerStats}
-          />
-        )}
-        {fieldCount === 2 && sessionData.field2 && (
-          <LeaderboardPanel
-            fieldKey="field2"
-            playerStats={sessionData.field2.playerStats}
-          />
-        )}
+      {/* ── Leaderboards ── */}
+      <div className="max-w-2xl mx-auto mb-8">
+        <LeaderboardPanel
+          fieldKey="Session"
+          playerStats={sessionData.playerStats}
+        />
       </div>
 
       {/* ── AI Insights Card ── */}

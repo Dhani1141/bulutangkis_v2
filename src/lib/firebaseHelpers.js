@@ -6,40 +6,35 @@ import { db } from '../firebase'
  *
  * @param {string} sessionId — e.g. "Session-30-09-2026"
  * @param {number} fieldCount — 1 or 2
- * @param {Object} fields — { field1: { players }, field2?: { players } }
+ * @param {string[]} allPlayers - Array of all player names
  */
-export async function createSession(sessionId, fieldCount, fields) {
+export async function createSession(sessionId, fieldCount, allPlayers) {
   // Use sessionId as the collection, and 'data' as the document
   const sessionRef = doc(db, sessionId, 'data')
+
+  const playerStats = {}
+  allPlayers.forEach((player) => {
+    playerStats[player] = { total_matches: 0, total_wins: 0 }
+  })
 
   const sessionData = {
     createdAt: new Date().toISOString(),
     fieldCount,
     status: 'active',
+    players: allPlayers,
+    playerStats,
   }
 
-  const allPlayersThisSession = new Set()
-
-  for (const [fieldKey, fieldData] of Object.entries(fields)) {
-    const playerStats = {}
-    fieldData.players.forEach((player) => {
-      playerStats[player] = { total_matches: 0, total_wins: 0 }
-      allPlayersThisSession.add(player)
-    })
-
-    sessionData[fieldKey] = {
-      status: 'active',
-      players: fieldData.players,
-      playerStats,
-    }
-  }
+  // Setup initial field statuses
+  if (fieldCount >= 1) sessionData.field1 = { status: 'active' }
+  if (fieldCount === 2) sessionData.field2 = { status: 'active' }
 
   await setDoc(sessionRef, sessionData)
 
   // Save to global history so we can load them next week
   const globalRef = doc(db, 'global', 'players')
   await setDoc(globalRef, {
-    allPlayers: arrayUnion(...Array.from(allPlayersThisSession))
+    allPlayers: arrayUnion(...allPlayers)
   }, { merge: true })
 
   return sessionData
@@ -87,12 +82,12 @@ export async function submitMatchResult(
 
   // +1 total_matches for all 4 players
   allPlayers.forEach((player) => {
-    updates[`${fieldKey}.playerStats.${player}.total_matches`] = increment(1)
+    updates[`playerStats.${player}.total_matches`] = increment(1)
   })
 
   // +1 total_wins for the 2 winners only
   winnerPlayers.forEach((player) => {
-    updates[`${fieldKey}.playerStats.${player}.total_wins`] = increment(1)
+    updates[`playerStats.${player}.total_wins`] = increment(1)
   })
 
   await updateDoc(sessionRef, updates)
@@ -141,15 +136,24 @@ export async function endFieldSession(sessionId, fieldKey) {
 
 /**
  * Delete a session completely (Reset/Testing feature).
- * Deletes all documents in the Session-DD-MM-YYYY collection.
+ * Deletes all documents in the Session-DD-MM-YYYY collection,
+ * and all documents in the global_players collection.
  */
 export async function deleteSession(sessionId) {
-  const colRef = collection(db, sessionId)
-  const snapshot = await getDocs(colRef)
-  
   const deletePromises = []
-  snapshot.forEach((document) => {
+  
+  // 1. Delete session docs
+  const sessionColRef = collection(db, sessionId)
+  const sessionSnap = await getDocs(sessionColRef)
+  sessionSnap.forEach((document) => {
     deletePromises.push(deleteDoc(doc(db, sessionId, document.id)))
+  })
+
+  // 2. Delete global_players docs
+  const globalColRef = collection(db, 'global_players')
+  const globalSnap = await getDocs(globalColRef)
+  globalSnap.forEach((document) => {
+    deletePromises.push(deleteDoc(doc(db, 'global_players', document.id)))
   })
   
   await Promise.all(deletePromises)

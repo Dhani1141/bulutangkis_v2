@@ -30,69 +30,34 @@ import { parseScoreFromSpeech } from '../lib/voiceParser'
  */
 export default function FieldPanel({
   fieldKey,
-  fieldData,
+  fieldStatus,
   sessionId,
+  currentMatch,
+  onRequestMatch,
+  onMatchEnd,
+  onClearCourt,
   onFieldEnded,
 }) {
-  const { players } = fieldData
-
   // ── State ──
-  // For Smart Matchmaking, we rely on playerStats rather than pre-formed teams.
-  const [playerStats, setPlayerStats] = useState(fieldData.playerStats || {})
-  const [currentMatch, setCurrentMatch] = useState(null)
   const [scoreA, setScoreA] = useState('')
   const [scoreB, setScoreB] = useState('')
-  const [fieldStatus, setFieldStatus] = useState(fieldData.status || 'active')
   const [showEndModal, setShowEndModal] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [lastResult, setLastResult] = useState(null) // flash win/lose feedback
   const [matchHistory, setMatchHistory] = useState([]) // tracks previous matches
 
-  
   // Voice recognition state
   const [isListening, setIsListening] = useState(false)
   const [voiceError, setVoiceError] = useState('')
 
-  // ── Derived queue info ──
-  const queueInfo = useMemo(() => {
-    if (!currentMatch) return smartSelectMatch(players, playerStats)
-
-    // During a match, show remaining players as the queue
-    const playing = new Set([...currentMatch.teamA.players, ...currentMatch.teamB.players])
-    const remainingPlayers = players.filter(p => !playing.has(p))
-    
-    // We can run smartSelectMatch on the remaining to see who would be next, 
-    // or just display them. For simplicity, just display remaining players.
-    // To keep it similar to the old queue, we can pair them up.
-    const remainingData = remainingPlayers.map(name => {
-      const s = playerStats[name] || { total_matches: 0, total_wins: 0 }
-      return {
-        name,
-        matches: s.total_matches,
-        wins: s.total_wins,
-        winRate: s.total_matches > 0 ? s.total_wins / s.total_matches : 0.5
-      }
-    }).sort((a, b) => {
-      if (a.matches !== b.matches) return a.matches - b.matches;
-      return b.winRate - a.winRate; // highest win rate first if tied matches
-    })
-
-    return {
-      remaining: remainingData
-    }
-  }, [currentMatch, players, playerStats])
-
   // ── Generate next match ──
   const handleGenerateMatch = useCallback(() => {
-    const result = smartSelectMatch(players, playerStats)
-    if (result) {
-      setCurrentMatch({ teamA: result.teamA, teamB: result.teamB })
-      setScoreA('')
-      setScoreB('')
-      setLastResult(null)
-      setVoiceError('')
-    }
-  }, [players, playerStats])
+    onRequestMatch()
+    setScoreA('')
+    setScoreB('')
+    setLastResult(null)
+    setVoiceError('')
+  }, [onRequestMatch])
 
   // ── Submit score ──
   const handleSubmitScore = useCallback(async () => {
@@ -119,18 +84,8 @@ export default function FieldPanel({
       // Firebase write — lightweight (counters only)
       await submitMatchResult(sessionId, fieldKey, winnerPlayers, allPlayers)
 
-      // Update local player stats for fair rotation
-      setPlayerStats((prev) => {
-        const nextStats = { ...prev }
-        allPlayers.forEach(p => {
-          if (!nextStats[p]) nextStats[p] = { total_matches: 0, total_wins: 0 }
-          nextStats[p].total_matches += 1
-          if (winnerPlayers.includes(p)) {
-            nextStats[p].total_wins += 1
-          }
-        })
-        return nextStats
-      })
+      // Notify parent to update stats and move them to bottom of queue
+      onMatchEnd(allPlayers, winnerPlayers)
 
       // Flash result feedback
       const resultData = {
@@ -147,7 +102,7 @@ export default function FieldPanel({
 
       // Clear match after a brief flash
       setTimeout(() => {
-        setCurrentMatch(null)
+        onClearCourt()
         setScoreA('')
         setScoreB('')
       }, 1200)
@@ -156,7 +111,7 @@ export default function FieldPanel({
     } finally {
       setIsSubmitting(false)
     }
-  }, [currentMatch, scoreA, scoreB, sessionId, fieldKey])
+  }, [currentMatch, scoreA, scoreB, sessionId, fieldKey, onMatchEnd, onClearCourt])
 
   // ── Voice Input ──
   const toggleListening = () => {
@@ -486,39 +441,6 @@ export default function FieldPanel({
           )}
         </AnimatePresence>
       </GlassCard>
-
-      {/* ── Queue ── */}
-      {queueInfo?.remaining && queueInfo.remaining.length > 0 && (
-        <GlassCard className="!p-4" animate={false}>
-          <h3 className="text-sm font-semibold text-white/40 flex items-center gap-2 mb-3">
-            <Users size={16} />
-            Waiting Players
-          </h3>
-          <div className="space-y-2">
-            {queueInfo.remaining.map((p, idx) => (
-              <motion.div
-                key={p.name}
-                className="glass rounded-lg p-3 flex items-center justify-between gap-2"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.05 }}
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-white/20 w-5 shrink-0">
-                    {idx + 1}.
-                  </span>
-                  <span className="text-white/80 font-medium text-sm">
-                    {p.name}
-                  </span>
-                </div>
-                <div className="text-xs text-white/30">
-                  {p.matches} match{p.matches !== 1 ? 'es' : ''} ({(p.winRate * 100).toFixed(0)}% WR)
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </GlassCard>
-      )}
 
       {/* ── Match History ── */}
       {matchHistory.length > 0 && (

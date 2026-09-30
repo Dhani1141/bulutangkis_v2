@@ -113,22 +113,8 @@ export default function SetupPage() {
 
     try {
       const valid = players.filter((p) => p.trim() !== '').map((p) => p.trim())
-      const fields = {}
 
-      if (fieldCount === 1) {
-        fields.field1 = { players: valid }
-      } else {
-        // Split evenly — ensure each half is even
-        const half = Math.floor(valid.length / 2)
-        const adjusted = half % 2 !== 0 ? half + 1 : half
-        const f1 = valid.slice(0, adjusted)
-        const f2 = valid.slice(adjusted)
-
-        fields.field1 = { players: f1 }
-        fields.field2 = { players: f2 }
-      }
-
-      await createSession(sessionId, fieldCount, fields)
+      await createSession(sessionId, fieldCount, valid)
       localStorage.setItem('currentSessionId', sessionId)
       localStorage.setItem('fieldCount', String(fieldCount))
       navigate('/match')
