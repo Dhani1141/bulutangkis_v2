@@ -135,26 +135,37 @@ export async function endFieldSession(sessionId, fieldKey) {
 }
 
 /**
+ * End the entire session globally.
+ */
+export async function endSessionGlobal(sessionId) {
+  const sessionRef = doc(db, sessionId, 'data')
+  await updateDoc(sessionRef, { status: 'ended' })
+}
+
+/**
  * Delete a session completely (Reset/Testing feature).
  * Deletes all documents in the Session-DD-MM-YYYY collection,
- * and all documents in the global_players collection.
+ * and resets all stats in the global_players collection to 0.
  */
 export async function deleteSession(sessionId) {
-  const deletePromises = []
+  const promises = []
   
   // 1. Delete session docs
   const sessionColRef = collection(db, sessionId)
   const sessionSnap = await getDocs(sessionColRef)
   sessionSnap.forEach((document) => {
-    deletePromises.push(deleteDoc(doc(db, sessionId, document.id)))
+    promises.push(deleteDoc(doc(db, sessionId, document.id)))
   })
 
-  // 2. Delete global_players docs
+  // 2. Reset global_players stats to 0 instead of deleting them
   const globalColRef = collection(db, 'global_players')
   const globalSnap = await getDocs(globalColRef)
   globalSnap.forEach((document) => {
-    deletePromises.push(deleteDoc(doc(db, 'global_players', document.id)))
+    promises.push(updateDoc(doc(db, 'global_players', document.id), {
+      total_matches: 0,
+      total_wins: 0
+    }))
   })
   
-  await Promise.all(deletePromises)
+  await Promise.all(promises)
 }

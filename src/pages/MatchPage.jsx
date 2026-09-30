@@ -4,19 +4,18 @@ import { motion } from 'framer-motion'
 import { Users } from 'lucide-react'
 import FieldPanel from '../components/FieldPanel'
 import GlassCard from '../components/GlassCard'
-import { getSession } from '../lib/firebaseHelpers'
+import { getSession, endSessionGlobal } from '../lib/firebaseHelpers'
 import { smartSelectMatch } from '../lib/matchmaking'
 
 export default function MatchPage() {
   const navigate = useNavigate()
   const [sessionData, setSessionData] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [endedFields, setEndedFields] = useState(new Set())
+
   
   // Lifted State for Global Queue
   const [playerStats, setPlayerStats] = useState({})
   const [activeMatches, setActiveMatches] = useState({ field1: null, field2: null })
-
   useEffect(() => {
     const loadSession = async () => {
       const sessionId = localStorage.getItem('currentSessionId')
@@ -33,12 +32,6 @@ export default function MatchPage() {
         }
         setSessionData(data)
         setPlayerStats(data.playerStats || {})
-
-        // Restore already-ended fields
-        const ended = new Set()
-        if (data.field1?.status === 'ended') ended.add('field1')
-        if (data.field2?.status === 'ended') ended.add('field2')
-        setEndedFields(ended)
       } catch (err) {
         console.error('Failed to load session:', err)
         navigate('/')
@@ -49,24 +42,6 @@ export default function MatchPage() {
 
     loadSession()
   }, [navigate])
-
-  const handleFieldEnded = useCallback(
-    (fieldKey) => {
-      setActiveMatches(prev => ({ ...prev, [fieldKey]: null }))
-      setEndedFields((prev) => {
-        const updated = new Set(prev)
-        updated.add(fieldKey)
-
-        const totalFields = sessionData?.fieldCount ?? 1
-        if (updated.size >= totalFields) {
-          // All fields ended → navigate to leaderboard
-          setTimeout(() => navigate('/leaderboard'), 1500)
-        }
-        return updated
-      })
-    },
-    [sessionData, navigate],
-  )
 
   const handleRequestMatch = useCallback((fieldKey) => {
     if (!sessionData) return null
@@ -164,6 +139,24 @@ export default function MatchPage() {
       return b.winRate - a.winRate; // secondary sort
     })
 
+  const handleEndGlobalSession = async () => {
+    // Validation
+    const hasActiveMatches = Object.values(activeMatches).some(match => match !== null)
+    
+    if (hasActiveMatches) {
+      alert("Cannot end session: There are active unsubmitted matches on the court(s). Please submit or cancel them first.")
+      return
+    }
+
+    try {
+      await endSessionGlobal(sessionId)
+      navigate('/leaderboard')
+    } catch (err) {
+      console.error('Failed to end global session:', err)
+      alert('Error ending session. Please try again.')
+    }
+  }
+
   return (
     <motion.div
       className="relative z-10 min-h-screen p-4 md:p-6"
@@ -172,11 +165,20 @@ export default function MatchPage() {
       exit={{ opacity: 0 }}
     >
       {/* ── Header ── */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-6 relative">
         <h1 className="text-3xl font-black bg-gradient-to-r from-accent-blue to-accent-purple bg-clip-text text-transparent">
           BukkuTangkis
         </h1>
         <p className="text-white/30 text-sm mt-1">{sessionId}</p>
+        
+        <div className="mt-4 flex justify-center">
+          <button
+            onClick={handleEndGlobalSession}
+            className="glass-button-danger text-sm px-6 py-2"
+          >
+            End Session
+          </button>
+        </div>
       </div>
 
       {/* ── Global Waiting Room ── */}
@@ -218,25 +220,21 @@ export default function MatchPage() {
         {sessionData.field1 && (
           <FieldPanel
             fieldKey="field1"
-            fieldStatus={endedFields.has('field1') ? 'ended' : 'active'}
             sessionId={sessionId}
             currentMatch={activeMatches.field1}
             onRequestMatch={() => handleRequestMatch('field1')}
             onMatchEnd={handleMatchEnd}
             onClearCourt={() => handleClearCourt('field1')}
-            onFieldEnded={handleFieldEnded}
           />
         )}
         {fieldCount === 2 && sessionData.field2 && (
           <FieldPanel
             fieldKey="field2"
-            fieldStatus={endedFields.has('field2') ? 'ended' : 'active'}
             sessionId={sessionId}
             currentMatch={activeMatches.field2}
             onRequestMatch={() => handleRequestMatch('field2')}
             onMatchEnd={handleMatchEnd}
             onClearCourt={() => handleClearCourt('field2')}
-            onFieldEnded={handleFieldEnded}
           />
         )}
       </div>

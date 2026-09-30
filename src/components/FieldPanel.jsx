@@ -30,18 +30,16 @@ import { parseScoreFromSpeech } from '../lib/voiceParser'
  */
 export default function FieldPanel({
   fieldKey,
-  fieldStatus,
   sessionId,
   currentMatch,
   onRequestMatch,
   onMatchEnd,
   onClearCourt,
-  onFieldEnded,
 }) {
   // ── State ──
   const [scoreA, setScoreA] = useState('')
   const [scoreB, setScoreB] = useState('')
-  const [showEndModal, setShowEndModal] = useState(false)
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [lastResult, setLastResult] = useState(null) // flash win/lose feedback
   const [matchHistory, setMatchHistory] = useState([]) // tracks previous matches
@@ -164,26 +162,7 @@ export default function FieldPanel({
     }
   }
 
-  // ── End session ──
-  const handleEndSession = () => {
-    if (currentMatch) {
-      setShowEndModal(true)
-    } else {
-      confirmEndSession()
-    }
-  }
 
-  const confirmEndSession = async () => {
-    try {
-      await endFieldSession(sessionId, fieldKey)
-      setFieldStatus('ended')
-      setCurrentMatch(null)
-      setShowEndModal(false)
-      onFieldEnded(fieldKey)
-    } catch (err) {
-      console.error('Failed to end session:', err)
-    }
-  }
 
   // ── Score validation ──
   const scoresValid =
@@ -200,42 +179,16 @@ export default function FieldPanel({
     scoreB !== '' &&
     parseInt(scoreA, 10) === parseInt(scoreB, 10)
 
-  // ── Ended state ──
-  if (fieldStatus === 'ended') {
-    return (
-      <GlassCard className="h-full flex items-center justify-center min-h-[300px]">
-        <div className="text-center">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', damping: 12 }}
-          >
-            <Trophy className="mx-auto mb-4 text-accent-orange" size={48} />
-          </motion.div>
-          <h3 className="text-2xl font-bold text-white/80">Session Ended</h3>
-          <p className="text-white/40 mt-2">
-            {fieldKey === 'field1' ? 'Field 1' : 'Field 2'} results are ready
-          </p>
-        </div>
-      </GlassCard>
-    )
-  }
+
 
   return (
     <div className="space-y-4">
       {/* ── Field Header ── */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-2">
         <h2 className="text-2xl font-bold text-white/90 flex items-center gap-2">
           <Swords size={24} className="text-accent-blue" />
           {fieldKey === 'field1' ? 'Field 1' : 'Field 2'}
         </h2>
-        <button
-          onClick={handleEndSession}
-          className="glass-button-danger text-sm !py-2 !px-4"
-        >
-          <StopCircle size={16} />
-          End Session
-        </button>
       </div>
 
       {/* ── Current Match ── */}
@@ -482,13 +435,7 @@ export default function FieldPanel({
         </GlassCard>
       )}
 
-      {/* ── End Session Modal ── */}
-      <EndSessionModal
-        isOpen={showEndModal}
-        onClose={() => setShowEndModal(false)}
-        onWait={() => setShowEndModal(false)}
-        onCancelMatch={confirmEndSession}
-      />
+
     </div>
   )
 }

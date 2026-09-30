@@ -177,7 +177,7 @@ export default function SetupPage() {
             ) : (
               <Trash2 size={16} />
             )}
-            Clear Dummy Data (Reset DB)
+            Reset Data
           </button>
         </motion.div>
 
