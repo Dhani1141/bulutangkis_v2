@@ -31,60 +31,60 @@
 }
 
 @layer components {
-  /* ── Glassmorphism Card ── */
+  /* ── Sleek Card ── */
   .glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
+    background: rgba(18, 18, 26, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
   }
 
   .glass-strong {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(26, 26, 46, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
 
-  /* ── Glassmorphism Input ── */
+  /* ── Sleek Input ── */
   .glass-input {
-    @apply bg-white/5 border border-white/10 rounded-xl px-4 py-3
+    @apply bg-[#15151e] border border-white/10 rounded-xl px-4 py-3
            text-white placeholder-white/30 outline-none
-           focus:border-accent-blue/50 focus:ring-2 focus:ring-accent-blue/20
-           transition-all duration-300;
+           focus:border-accent-blue focus:bg-[#1a1a24]
+           transition-all duration-200;
   }
 
-  /* ── Glassmorphism Buttons ── */
+  /* ── Sleek Buttons ── */
   .glass-button {
-    @apply glass rounded-xl px-6 py-3 font-semibold
-           hover:bg-white/10 active:scale-[0.97]
-           transition-all duration-300
+    @apply bg-[#1a1a24] border border-white/10 rounded-xl px-6 py-3 font-medium text-sm text-white/80
+           hover:bg-[#252535] hover:text-white active:scale-[0.98]
+           transition-all duration-200
            flex items-center justify-center gap-2
            cursor-pointer select-none;
   }
 
   .glass-button-primary {
-    @apply bg-accent-blue/20 border border-accent-blue/30 rounded-xl px-6 py-3 font-semibold
-           hover:bg-accent-blue/30 hover:border-accent-blue/50 active:scale-[0.97]
-           transition-all duration-300 text-accent-blue
+    @apply bg-accent-blue/10 border border-accent-blue/20 rounded-xl px-6 py-3 font-medium text-sm text-accent-blue
+           hover:bg-accent-blue/20 hover:border-accent-blue/40 active:scale-[0.98]
+           transition-all duration-200
            flex items-center justify-center gap-2
            cursor-pointer select-none;
   }
 
   .glass-button-danger {
-    @apply bg-red-500/20 border border-red-500/30 rounded-xl px-6 py-3 font-semibold
-           hover:bg-red-500/30 hover:border-red-500/50 active:scale-[0.97]
-           transition-all duration-300 text-red-400
+    @apply bg-red-500/10 border border-red-500/20 rounded-xl px-6 py-3 font-medium text-sm text-red-400
+           hover:bg-red-500/20 hover:border-red-500/40 active:scale-[0.98]
+           transition-all duration-200
            flex items-center justify-center gap-2
            cursor-pointer select-none;
   }
 
   .glass-button-success {
-    @apply bg-emerald-500/20 border border-emerald-500/30 rounded-xl px-6 py-3 font-semibold
-           hover:bg-emerald-500/30 hover:border-emerald-500/50 active:scale-[0.97]
-           transition-all duration-300 text-emerald-400
+    @apply bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-6 py-3 font-medium text-sm text-emerald-400
+           hover:bg-emerald-500/20 hover:border-emerald-500/40 active:scale-[0.98]
+           transition-all duration-200
            flex items-center justify-center gap-2
            cursor-pointer select-none;
   }

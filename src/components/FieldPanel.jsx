@@ -46,6 +46,8 @@ export default function FieldPanel({
   const [showEndModal, setShowEndModal] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [lastResult, setLastResult] = useState(null) // flash win/lose feedback
+  const [matchHistory, setMatchHistory] = useState([]) // tracks previous matches
+
   
   // Voice recognition state
   const [isListening, setIsListening] = useState(false)
@@ -131,12 +133,17 @@ export default function FieldPanel({
       })
 
       // Flash result feedback
-      setLastResult({
+      const resultData = {
         winner,
         winnerPlayers,
         scoreA: numA,
         scoreB: numB,
-      })
+        teamA: currentMatch.teamA.players,
+        teamB: currentMatch.teamB.players,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+      setLastResult(resultData)
+      setMatchHistory((prev) => [resultData, ...prev])
 
       // Clear match after a brief flash
       setTimeout(() => {
@@ -508,6 +515,46 @@ export default function FieldPanel({
                   {p.matches} match{p.matches !== 1 ? 'es' : ''} ({(p.winRate * 100).toFixed(0)}% WR)
                 </div>
               </motion.div>
+            ))}
+          </div>
+        </GlassCard>
+      )}
+
+      {/* ── Match History ── */}
+      {matchHistory.length > 0 && (
+        <GlassCard className="!p-4" animate={false}>
+          <h3 className="text-sm font-semibold text-white/40 flex items-center gap-2 mb-3">
+            <Clock size={16} />
+            Match History
+          </h3>
+          <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+            {matchHistory.map((hist, idx) => (
+              <div key={idx} className="glass rounded-lg p-3 flex flex-col gap-2">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-xs text-white/30">{hist.time}</span>
+                  <span className="text-xs font-medium text-accent-blue/80">Completed</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  {/* Team A */}
+                  <div className={`flex-1 text-center ${hist.winner === 'teamA' ? 'text-emerald-400 font-bold' : 'text-white/50'}`}>
+                    <p className="text-sm">{hist.teamA[0]}</p>
+                    <p className="text-sm">{hist.teamA[1]}</p>
+                  </div>
+                  
+                  {/* Scores */}
+                  <div className="px-4 flex items-center gap-2 font-black text-lg">
+                    <span className={hist.winner === 'teamA' ? 'text-emerald-400' : 'text-white/40'}>{hist.scoreA}</span>
+                    <span className="text-white/20">-</span>
+                    <span className={hist.winner === 'teamB' ? 'text-emerald-400' : 'text-white/40'}>{hist.scoreB}</span>
+                  </div>
+
+                  {/* Team B */}
+                  <div className={`flex-1 text-center ${hist.winner === 'teamB' ? 'text-emerald-400 font-bold' : 'text-white/50'}`}>
+                    <p className="text-sm">{hist.teamB[0]}</p>
+                    <p className="text-sm">{hist.teamB[1]}</p>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         </GlassCard>
