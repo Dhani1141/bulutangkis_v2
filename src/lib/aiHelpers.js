@@ -40,7 +40,25 @@ Instructions:
 
   while (attempt <= maxRetries) {
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+      // Step 1: Ask the API which models are available for this key
+      const modelsRes = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`
+      );
+      if (!modelsRes.ok) {
+        const err = await modelsRes.text();
+        throw new Error(`Failed to list models: ${modelsRes.status} - ${err}`);
+      }
+      const modelsData = await modelsRes.json();
+      const supportedModel = (modelsData.models || []).find(m =>
+        Array.isArray(m.supportedGenerationMethods) &&
+        m.supportedGenerationMethods.includes('generateContent')
+      );
+      if (!supportedModel) {
+        throw new Error('No model available that supports generateContent for this API key.');
+      }
+
+      // Step 2: Use the exact name the API returned (e.g. "models/gemini-1.5-flash")
+      const url = `https://generativelanguage.googleapis.com/v1beta/${supportedModel.name}:generateContent?key=${apiKey}`;
 
       const response = await fetch(url, {
         method: 'POST',
