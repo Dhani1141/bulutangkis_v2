@@ -13,7 +13,7 @@ export default function LeaderboardPage() {
   const [loading, setLoading] = useState(true)
   const [aiCommentary, setAiCommentary] = useState('')
   const [isLoadingAi, setIsLoadingAi] = useState(false)
-  const [aiLoadingMsg, setAiLoadingMsg] = useState('The commentator is clearing their throat...')
+  const [aiLoadingMsg, setAiLoadingMsg] = useState('Komentator sedang bersiap...')
 
   useEffect(() => {
     const loadSession = async () => {
@@ -104,7 +104,7 @@ export default function LeaderboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          Leaderboard
+          Papan Skor
         </motion.h1>
         <motion.p
           className="text-white/30"
@@ -134,7 +134,7 @@ export default function LeaderboardPage() {
         <GlassCard className="!p-6 border-accent-purple/30 bg-accent-purple/5">
           <h2 className="text-xl font-bold text-white/90 mb-4 flex items-center gap-2">
             <Sparkles size={20} className="text-accent-purple" />
-            AI Insights
+            Komentar AI
           </h2>
           {isLoadingAi ? (
             <div className="flex items-center gap-3 text-white/40">
@@ -165,7 +165,7 @@ export default function LeaderboardPage() {
           className="glass-button text-white/50 hover:text-white"
         >
           <ArrowLeft size={18} />
-          New Session
+          Sesi Baru
         </button>
       </motion.div>
     </motion.div>

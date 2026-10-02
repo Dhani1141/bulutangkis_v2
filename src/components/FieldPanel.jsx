@@ -187,7 +187,7 @@ export default function FieldPanel({
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-2xl font-bold text-white/90 flex items-center gap-2">
           <Swords size={24} className="text-accent-blue" />
-          {fieldKey === 'field1' ? 'Field 1' : 'Field 2'}
+          {fieldKey === 'field1' ? 'Lapangan 1' : 'Lapangan 2'}
         </h2>
       </div>
 
@@ -203,11 +203,11 @@ export default function FieldPanel({
             >
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-sm font-semibold text-white/40 uppercase tracking-wider">
-                  Current Match
+                  Pertandingan Berlangsung
                 </h3>
                 <div className="flex items-center gap-1 text-xs text-accent-purple bg-accent-purple/10 px-2 py-1 rounded-md border border-accent-purple/20">
                   <Sparkles size={12} />
-                  <span>AI Balanced</span>
+                  <span>Seimbang AI</span>
                 </div>
               </div>
 
@@ -296,7 +296,7 @@ export default function FieldPanel({
                   <div className="flex items-end gap-3 relative">
                     <div className="flex-1">
                       <label className="text-xs text-white/30 mb-1 block">
-                        Team A Score
+                        Skor Tim A
                       </label>
                       <input
                         type="number"
@@ -312,7 +312,7 @@ export default function FieldPanel({
                     </span>
                     <div className="flex-1">
                       <label className="text-xs text-white/30 mb-1 block">
-                        Team B Score
+                        Skor Tim B
                       </label>
                       <input
                         type="number"
@@ -352,7 +352,7 @@ export default function FieldPanel({
 
                   {isTied && (
                     <p className="text-amber-400 text-xs mt-2 text-center">
-                      Scores cannot be equal — there must be a winner
+                      Skor tidak boleh sama — harus ada pemenang
                     </p>
                   )}
 
@@ -366,7 +366,7 @@ export default function FieldPanel({
                     ) : (
                       <>
                         <Send size={16} />
-                        Submit Match
+                        Submit Pertandingan
                       </>
                     )}
                   </button>
@@ -382,13 +382,13 @@ export default function FieldPanel({
               className="text-center py-8"
             >
               <Swords className="mx-auto mb-4 text-white/10" size={48} />
-              <p className="text-white/30 mb-4">No active match</p>
+              <p className="text-white/30 mb-4">Belum ada pertandingan</p>
               <button
                 onClick={handleGenerateMatch}
                 className="glass-button-primary"
               >
                 <RotateCcw size={16} />
-                Generate AI Match
+                Buat Pertandingan AI
               </button>
             </motion.div>
           )}
@@ -400,14 +400,14 @@ export default function FieldPanel({
         <GlassCard className="!p-4" animate={false}>
           <h3 className="text-sm font-semibold text-white/40 flex items-center gap-2 mb-3">
             <Clock size={16} />
-            Match History
+            Riwayat Pertandingan
           </h3>
           <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
             {matchHistory.map((hist, idx) => (
               <div key={idx} className="glass rounded-lg p-3 flex flex-col gap-2">
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-xs text-white/30">{hist.time}</span>
-                  <span className="text-xs font-medium text-accent-blue/80">Completed</span>
+                  <span className="text-xs font-medium text-accent-blue/80">Selesai</span>
                 </div>
                 <div className="flex items-center justify-between">
                   {/* Team A */}

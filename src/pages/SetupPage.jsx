@@ -57,7 +57,7 @@ export default function SetupPage() {
   const handleResetSession = async () => {
     if (!sessionId) return
     const confirmed = window.confirm(
-      `Are you sure you want to completely DELETE all dummy data for ${sessionId}? This action cannot be undone.`
+      `Yakin ingin menghapus semua data untuk ${sessionId}? Tindakan ini tidak bisa dibatalkan.`
     )
     if (!confirmed) return
 
@@ -68,12 +68,12 @@ export default function SetupPage() {
       await deleteSession(sessionId)
       localStorage.removeItem('currentSessionId')
       localStorage.removeItem('fieldCount')
-      setSuccessMsg(`Successfully cleared dummy data for ${sessionId}.`)
+      setSuccessMsg(`Data ${sessionId} berhasil direset.`)
       setTimeout(() => setSuccessMsg(''), 4000)
       window.location.reload()
     } catch (err) {
       console.error('Failed to reset session:', err)
-      setError(`Failed to clear database data: ${err.message}`)
+      setError(`Gagal menghapus data: ${err.message}`)
     } finally {
       setIsResetting(false)
     }
@@ -83,22 +83,22 @@ export default function SetupPage() {
     const valid = players.filter((p) => p.trim() !== '')
 
     if (valid.length < 4) {
-      setError('Minimum 4 players required.')
+      setError('Minimal 4 pemain dibutuhkan.')
       return false
     }
     if (valid.length % 2 !== 0) {
-      setError('Total players must be an even number for 2v2 pairings.')
+      setError('Jumlah pemain harus genap untuk pasangan 2v2.')
       return false
     }
 
     const unique = new Set(valid.map((p) => p.trim().toLowerCase()))
     if (unique.size !== valid.length) {
-      setError('Player names must be unique.')
+      setError('Nama pemain harus unik (tidak boleh sama).')
       return false
     }
 
     if (fieldCount === 2 && valid.length < 8) {
-      setError('Minimum 8 players required for 2 courts (4 per court).')
+      setError('Minimal 8 pemain dibutuhkan untuk 2 lapangan (4 per lapangan).')
       return false
     }
 
@@ -121,7 +121,7 @@ export default function SetupPage() {
       navigate('/match')
     } catch (err) {
       console.error(err)
-      setError(`Failed to create session: ${err.message}`)
+      setError(`Gagal membuat sesi: ${err.message}`)
     } finally {
       setIsLoading(false)
     }
@@ -157,7 +157,7 @@ export default function SetupPage() {
             BukkuTangkis
           </h1>
           <p className="text-white/40 text-lg">
-            Badminton Matchmaker &amp; Score Tracker
+            Pengatur Pertandingan &amp; Pencatat Skor Bulu Tangkis
           </p>
         </motion.div>
 
@@ -199,7 +199,7 @@ export default function SetupPage() {
         <GlassCard className="mb-5" transition={{ delay: 0.05 }}>
           <h2 className="text-lg font-semibold text-white/80 mb-4 flex items-center gap-2">
             <Shuffle size={20} className="text-accent-purple" />
-            Number of Courts
+            Jumlah Lapangan
           </h2>
           <div className="flex gap-3">
             {[1, 2].map((count) => (
@@ -212,7 +212,7 @@ export default function SetupPage() {
                     : 'bg-[#15151e] border-white/10 hover:bg-white/5 text-white/50'
                 }`}
               >
-                {count} Court{count > 1 ? 's' : ''}
+                {count} Lapangan
               </button>
             ))}
           </div>
@@ -222,9 +222,9 @@ export default function SetupPage() {
         <GlassCard className="mb-5" transition={{ delay: 0.1 }}>
           <h2 className="text-lg font-semibold text-white/80 mb-4 flex items-center gap-2">
             <Users size={20} className="text-accent-green" />
-            Players
+            Daftar Pemain
             <span className="ml-auto text-sm font-normal text-white/30">
-              {validCount} player{validCount !== 1 ? 's' : ''}
+              {validCount} pemain
             </span>
           </h2>
 
@@ -232,7 +232,7 @@ export default function SetupPage() {
           <div className="mb-4">
             <input
               type="text"
-              placeholder="Type player name and press Enter..."
+              placeholder="Ketik nama pemain lalu tekan Enter..."
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault()
@@ -272,7 +272,7 @@ export default function SetupPage() {
             <div className="pt-4 border-t border-white/10 mt-4">
               <h3 className="text-xs font-semibold text-white/30 uppercase tracking-wider mb-3 flex items-center gap-2">
                 <History size={12} />
-                Recent Players
+                Pemain Sebelumnya
               </h3>
               <div className="flex flex-wrap gap-2">
                 {availableHistory.map((p, idx) => (
@@ -323,7 +323,7 @@ export default function SetupPage() {
           ) : (
             <>
               <Play size={20} />
-              Start Session
+              Mulai Sesi
             </>
           )}
         </motion.button>
@@ -333,16 +333,16 @@ export default function SetupPage() {
           <GlassCard>
             <h2 className="text-lg font-semibold text-white/80 mb-4 flex items-center gap-2">
               <Trophy size={20} className="text-accent-orange" />
-              All-Time Global Stats
+              Statistik Global (Semua Waktu)
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm text-white/70">
                 <thead className="bg-[#15151e] text-white/50 border-b border-white/10 uppercase text-xs">
                   <tr>
-                    <th className="px-4 py-3 font-semibold rounded-tl-lg">Player</th>
-                    <th className="px-4 py-3 font-semibold text-center">Matches</th>
+                    <th className="px-4 py-3 font-semibold rounded-tl-lg">Pemain</th>
+                    <th className="px-4 py-3 font-semibold text-center">Pertandingan</th>
                     <th className="px-4 py-3 font-semibold text-center">Win Rate</th>
-                    <th className="px-4 py-3 font-semibold text-right rounded-tr-lg">Last Played</th>
+                    <th className="px-4 py-3 font-semibold text-right rounded-tr-lg">Terakhir Main</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">

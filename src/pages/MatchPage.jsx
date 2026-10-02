@@ -144,7 +144,7 @@ export default function MatchPage() {
     const hasActiveMatches = Object.values(activeMatches).some(match => match !== null)
     
     if (hasActiveMatches) {
-      alert("Cannot end session: There are active unsubmitted matches on the court(s). Please submit or cancel them first.")
+      alert("Sesi tidak bisa diakhiri: Masih ada pertandingan aktif yang belum disubmit. Harap submit atau batalkan terlebih dahulu.")
       return
     }
 
@@ -153,7 +153,7 @@ export default function MatchPage() {
       navigate('/leaderboard')
     } catch (err) {
       console.error('Failed to end global session:', err)
-      alert('Error ending session. Please try again.')
+      alert('Gagal mengakhiri sesi. Silakan coba lagi.')
     }
   }
 
@@ -176,7 +176,7 @@ export default function MatchPage() {
             onClick={handleEndGlobalSession}
             className="glass-button-danger text-sm px-6 py-2"
           >
-            End Session
+            Akhiri Sesi
           </button>
         </div>
       </div>
@@ -187,7 +187,7 @@ export default function MatchPage() {
           <GlassCard className="!p-4 bg-accent-blue/5 border-accent-blue/20">
             <h3 className="text-sm font-semibold text-accent-blue flex items-center gap-2 mb-3">
               <Users size={16} />
-              Global Waiting Room
+              Ruang Tunggu Global
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {globalQueueData.map((p, idx) => (
@@ -202,7 +202,7 @@ export default function MatchPage() {
                     <span className="text-white/90 font-semibold truncate">{p.name}</span>
                   </div>
                   <div className="text-xs text-white/40 pl-5">
-                    {p.matches} match{p.matches !== 1 ? 'es' : ''}
+                    {p.matches} pertandingan
                   </div>
                 </motion.div>
               ))}
