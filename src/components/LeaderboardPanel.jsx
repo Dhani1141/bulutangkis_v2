@@ -57,77 +57,83 @@ export default function LeaderboardPanel({ fieldKey, playerStats }) {
       </motion.h2>
 
       <div className="space-y-3">
-        {players.map((player, idx) => {
-          const rank = sorted ? RANK_CONFIG[idx] : null
-          const RankIcon = rank?.Icon || User
+        {(!players || players.length === 0) ? (
+          <div className="text-center p-6 text-white/30 italic text-sm glass rounded-2xl">
+            Belum ada data pemain.
+          </div>
+        ) : (
+          players.map((player, idx) => {
+            const rank = sorted ? RANK_CONFIG[idx] : null
+            const RankIcon = rank?.Icon || User
 
-          return (
-            <motion.div
-              key={player.name}
-              layout
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{
-                layout: { type: 'spring', damping: 25, stiffness: 200 },
-                delay: idx * 0.1,
-              }}
-            >
-              <div
-                className={`glass rounded-2xl p-4 flex items-center gap-4 transition-all duration-500 ${
-                  sorted && idx === 0
-                    ? 'border-yellow-400/30 bg-yellow-400/5'
-                    : ''
-                }`}
+            return (
+              <motion.div
+                key={`${player?.name || 'unknown'}-${idx}`}
+                layout
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  layout: { type: 'spring', damping: 25, stiffness: 200 },
+                  delay: idx * 0.1,
+                }}
               >
-                {/* Rank badge */}
                 <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-500 ${
-                    rank ? rank.bg : 'bg-white/5'
+                  className={`glass rounded-2xl p-4 flex items-center gap-4 transition-all duration-500 ${
+                    sorted && idx === 0
+                      ? 'border-yellow-400/30 bg-yellow-400/5'
+                      : ''
                   }`}
                 >
-                  {sorted ? (
-                    <RankIcon
-                      size={20}
-                      className={rank ? rank.color : 'text-white/30'}
-                    />
-                  ) : (
-                    <span className="text-white/30 text-sm font-medium">
-                      {idx + 1}
-                    </span>
-                  )}
-                </div>
-
-                {/* Player name & stats */}
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-white/90 truncate">
-                    {player.name}
-                  </p>
-                  <p className="text-xs text-white/30">
-                    {player.totalWins}W — {player.totalMatches} match
-                    {player.totalMatches !== 1 ? 'es' : ''}
-                  </p>
-                </div>
-
-                {/* Win Rate with count-up animation */}
-                <div className="text-right shrink-0">
-                  <div className="text-2xl font-black text-accent-cyan tabular-nums">
-                    <CountUp
-                      end={player.winRate}
-                      duration={2.2}
-                      decimals={1}
-                      suffix="%"
-                      useEasing
-                    />
+                  {/* Rank badge */}
+                  <div
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-500 ${
+                      rank ? rank.bg : 'bg-white/5'
+                    }`}
+                  >
+                    {sorted ? (
+                      <RankIcon
+                        size={20}
+                        className={rank ? rank.color : 'text-white/30'}
+                      />
+                    ) : (
+                      <span className="text-white/30 text-sm font-medium">
+                        {idx + 1}
+                      </span>
+                    )}
                   </div>
-                  <p className="text-[10px] text-white/30 flex items-center gap-1 justify-end mt-0.5">
-                    <Target size={10} />
-                    Win Rate
-                  </p>
+
+                  {/* Player name & stats */}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-white/90 truncate">
+                      {player?.name || 'Unknown'}
+                    </p>
+                    <p className="text-xs text-white/30">
+                      {player?.totalWins || 0}W — {player?.totalMatches || 0} match
+                      {player?.totalMatches !== 1 ? 'es' : ''}
+                    </p>
+                  </div>
+
+                  {/* Win Rate with count-up animation */}
+                  <div className="text-right shrink-0">
+                    <div className="text-2xl font-black text-accent-cyan tabular-nums">
+                      <CountUp
+                        end={player?.winRate || 0}
+                        duration={2.2}
+                        decimals={1}
+                        suffix="%"
+                        useEasing
+                      />
+                    </div>
+                    <p className="text-[10px] text-white/30 flex items-center gap-1 justify-end mt-0.5">
+                      <Target size={10} />
+                      Win Rate
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          )
-        })}
+              </motion.div>
+            )
+          })
+        )}
       </div>
     </div>
   )

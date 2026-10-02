@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion'
 import SetupPage from './pages/SetupPage'
 import MatchPage from './pages/MatchPage'
 import LeaderboardPage from './pages/LeaderboardPage'
+import { ErrorBoundary } from './components/ErrorBoundary'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -29,8 +30,11 @@ export default function App() {
           <div className="absolute top-[40%] left-[50%] w-[300px] h-[300px] rounded-full bg-accent-cyan/10 blur-[100px] animate-pulse-slow" />
         </div>
 
-        <AnimatedRoutes />
+        <ErrorBoundary>
+          <AnimatedRoutes />
+        </ErrorBoundary>
       </div>
     </BrowserRouter>
   )
 }
+

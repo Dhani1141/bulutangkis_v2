@@ -182,7 +182,7 @@ export default function MatchPage() {
       </div>
 
       {/* ── Global Waiting Room ── */}
-      {globalQueueData.length > 0 && (
+      {globalQueueData && globalQueueData.length > 0 && (
         <div className="max-w-4xl mx-auto mb-8">
           <GlassCard className="!p-4 bg-accent-blue/5 border-accent-blue/20">
             <h3 className="text-sm font-semibold text-accent-blue flex items-center gap-2 mb-3">
@@ -192,7 +192,7 @@ export default function MatchPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {globalQueueData.map((p, idx) => (
                 <motion.div
-                  key={p.name}
+                  key={`${p?.name || 'unknown'}-${idx}`}
                   layout
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   className="glass rounded-xl p-3 flex flex-col gap-1"
@@ -201,10 +201,10 @@ export default function MatchPage() {
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-white/30 font-bold shrink-0">{idx + 1}.</span>
-                    <span className="text-white/90 font-semibold truncate">{p.name}</span>
+                    <span className="text-white/90 font-semibold truncate">{p?.name || 'Unknown'}</span>
                   </div>
                   <div className="text-xs text-white/40 pl-5">
-                    {p.matches} pertandingan
+                    {p?.matches || 0} pertandingan
                   </div>
                 </motion.div>
               ))}
