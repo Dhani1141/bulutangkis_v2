@@ -49,15 +49,28 @@ Instructions:
         throw new Error(`Failed to list models: ${modelsRes.status} - ${err}`);
       }
       const modelsData = await modelsRes.json();
-      const supportedModel = (modelsData.models || []).find(m =>
+      const allModels = (modelsData.models || []).filter(m =>
         Array.isArray(m.supportedGenerationMethods) &&
-        m.supportedGenerationMethods.includes('generateContent')
+        m.supportedGenerationMethods.includes('generateContent') &&
+        // Skip models known to be deprecated/blocked for new users
+        !m.name.includes('gemini-2.5')
       );
+
+      // Prefer gemini-3.8-flash (Google's recommended replacement), then any other
+      const preferredOrder = ['gemini-3.8-flash', 'gemini-1.5-flash', 'gemini-pro'];
+      let supportedModel = null;
+      for (const preferred of preferredOrder) {
+        supportedModel = allModels.find(m => m.name.includes(preferred));
+        if (supportedModel) break;
+      }
+      // If none of the preferred found, fall back to first available
+      if (!supportedModel) supportedModel = allModels[0];
+      
       if (!supportedModel) {
-        throw new Error('No model available that supports generateContent for this API key.');
+        throw new Error('No usable model found for this API key.');
       }
 
-      // Step 2: Use the exact name the API returned (e.g. "models/gemini-1.5-flash")
+      // Step 2: Use the exact name the API returned
       const url = `https://generativelanguage.googleapis.com/v1beta/${supportedModel.name}:generateContent?key=${apiKey}`;
 
       const response = await fetch(url, {
