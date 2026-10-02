@@ -44,42 +44,43 @@ export default function MatchPage() {
   }, [navigate])
 
   const handleRequestMatch = useCallback((fieldKey) => {
-    if (!sessionData) return null
+    if (!sessionData) return
 
-    // Determine who is currently playing across all courts
-    const playing = new Set()
-    Object.values(activeMatches).forEach(match => {
-      if (match) {
-        match.teamA.players.forEach(p => playing.add(p))
-        match.teamB.players.forEach(p => playing.add(p))
+    setActiveMatches(prev => {
+      // Determine who is currently playing across all courts using the LATEST state
+      const playing = new Set()
+      Object.values(prev).forEach(match => {
+        if (match) {
+          match.teamA.players.forEach(p => playing.add(p))
+          match.teamB.players.forEach(p => playing.add(p))
+        }
+      })
+
+      // Filter available players
+      const availablePlayers = sessionData.players.filter(p => !playing.has(p))
+      
+      // Sort strictly by total_matches (ASC)
+      availablePlayers.sort((a, b) => {
+        const matchesA = playerStats[a]?.total_matches || 0
+        const matchesB = playerStats[b]?.total_matches || 0
+        return matchesA - matchesB
+      })
+
+      if (availablePlayers.length < 4) return prev // Not enough players
+
+      // Pick top 4 priority players
+      const top4 = availablePlayers.slice(0, 4)
+      
+      // Balance these 4 players using AI logic
+      const balancedMatch = smartSelectMatch(top4, playerStats)
+      
+      if (balancedMatch) {
+        return { ...prev, [fieldKey]: balancedMatch }
       }
+      
+      return prev
     })
-
-    // Filter available players
-    const availablePlayers = sessionData.players.filter(p => !playing.has(p))
-    
-    // Sort strictly by total_matches (ASC)
-    availablePlayers.sort((a, b) => {
-      const matchesA = playerStats[a]?.total_matches || 0
-      const matchesB = playerStats[b]?.total_matches || 0
-      return matchesA - matchesB
-    })
-
-    if (availablePlayers.length < 4) return null
-
-    // Pick top 4 priority players
-    const top4 = availablePlayers.slice(0, 4)
-    
-    // Balance these 4 players using AI logic
-    const balancedMatch = smartSelectMatch(top4, playerStats)
-    
-    if (balancedMatch) {
-      setActiveMatches(prev => ({ ...prev, [fieldKey]: balancedMatch }))
-      return balancedMatch
-    }
-    
-    return null
-  }, [sessionData, activeMatches, playerStats])
+  }, [sessionData, playerStats])
 
   const handleMatchEnd = useCallback((allPlayersInMatch, winnerPlayers) => {
     // Update local stats so they get pushed to bottom of queue

@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, updateDoc, increment, deleteDoc, collection, getDocs, arrayUnion } from 'firebase/firestore'
+import { doc, setDoc, getDoc, updateDoc, increment, deleteDoc, collection, getDocs, arrayUnion, writeBatch } from 'firebase/firestore'
 import { db } from '../firebase'
 
 /**
@@ -78,6 +78,7 @@ export async function submitMatchResult(
   allPlayers,
 ) {
   const sessionRef = doc(db, sessionId, 'data')
+  const batch = writeBatch(db)
   const updates = {}
 
   // +1 total_matches for all 4 players
@@ -90,17 +91,17 @@ export async function submitMatchResult(
     updates[`playerStats.${player}.total_wins`] = increment(1)
   })
 
-  await updateDoc(sessionRef, updates)
+  batch.update(sessionRef, updates)
 
   // -- GLOBAL STATS UPDATE --
   const dateStr = new Date().toLocaleDateString()
   
-  // Update all players (match count + date)
-  const globalPromises = allPlayers.map(async (player) => {
+  // Update all players (match count + date) in the same batch
+  allPlayers.forEach((player) => {
     const isWinner = winnerPlayers.includes(player)
     const playerRef = doc(db, 'global_players', player)
     
-    await setDoc(playerRef, {
+    batch.set(playerRef, {
       name: player,
       total_matches: increment(1),
       total_wins: isWinner ? increment(1) : increment(0),
@@ -108,7 +109,7 @@ export async function submitMatchResult(
     }, { merge: true })
   })
 
-  await Promise.all(globalPromises)
+  await batch.commit()
 }
 
 /**
