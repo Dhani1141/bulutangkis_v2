@@ -206,10 +206,10 @@ export default function SetupPage() {
               <button
                 key={count}
                 onClick={() => setFieldCount(count)}
-                className={`flex-1 py-3 rounded-xl font-semibold transition-all duration-300 border ${
+                className={`flex-1 py-3 rounded-full font-semibold transition-all duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] border ${
                   fieldCount === count
-                    ? 'bg-accent-blue/20 border-accent-blue/50 text-accent-blue shadow-lg shadow-accent-blue/10'
-                    : 'bg-[#15151e] border-white/10 hover:bg-white/5 text-white/50'
+                    ? 'bg-accent-blue/20 border-accent-blue/40 text-accent-blue shadow-[inset_0_2px_4px_rgba(255,255,255,0.1)]'
+                    : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/50'
                 }`}
               >
                 {count} Lapangan
@@ -243,7 +243,7 @@ export default function SetupPage() {
                   }
                 }
               }}
-              className="w-full bg-[#15151e] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-accent-blue focus:bg-[#1a1a24] transition-all"
+              className="w-full glass-input"
             />
           </div>
 
@@ -253,7 +253,7 @@ export default function SetupPage() {
               player.trim() !== '' && (
                 <div
                   key={index}
-                  className="flex items-center gap-2 bg-[#252535] border border-white/10 rounded-lg px-3 py-1.5"
+                  className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5"
                 >
                   <span className="text-white/90 text-sm font-medium">{player}</span>
                   <button

@@ -193,7 +193,9 @@ export default function MatchPage() {
               {globalQueueData.map((p, idx) => (
                 <motion.div
                   key={p.name}
-                  className="glass rounded-lg p-3 flex flex-col gap-1"
+                  layout
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  className="glass rounded-xl p-3 flex flex-col gap-1"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                 >

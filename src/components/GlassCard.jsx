@@ -23,9 +23,12 @@ export default function GlassCard({
       className={`glass rounded-2xl p-6 ${className}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
+      transition={{ type: "spring", stiffness: 400, damping: 30 }}
       {...(hover
-        ? { whileHover: { y: -2, transition: { duration: 0.2 } } }
+        ? { 
+            whileHover: { y: -2, transition: { type: "spring", stiffness: 400, damping: 30 } },
+            whileTap: { scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 30 } }
+          }
         : {})}
       {...props}
     >
