@@ -100,7 +100,7 @@ Instructions:
       const data = await response.json();
       const text = data.candidates[0].content.parts[0].text;
       
-      return text || 'The commentator is mysteriously speechless. Somebody hand them a shuttlecock.';
+      return text || 'Komentator tiba-tiba kehabisan kata-kata. Tolong ambilkan kok badminton.';
     } catch (err) {
       if (attempt < maxRetries && err.message.includes('503')) {
         attempt++;
@@ -109,7 +109,10 @@ Instructions:
         continue;
       }
       console.error('AI Commentary fetch error:', err)
-      return `AI Error: ${err.message}`
+      if (err.message.includes('503')) {
+         return 'Komentator sedang sibuk (Server Google penuh/503). Silakan coba lagi nanti.';
+      }
+      return `Komentator AI gagal dimuat: ${err.message.split('{')[0].trim()}`
     }
   }
 }
