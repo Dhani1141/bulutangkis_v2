@@ -16,7 +16,7 @@ export default function LeaderboardPanel({ fieldKey, playerStats }) {
 
   useEffect(() => {
     // Build player list with win rates
-    const list = Object.entries(playerStats).map(([name, stats]) => ({
+    const list = Object.entries(playerStats || {}).map(([name, stats]) => ({
       name,
       totalMatches: stats.total_matches,
       totalWins: stats.total_wins,

@@ -32,6 +32,7 @@ export default function LeaderboardPage() {
         setSessionData(data)
       } catch (err) {
         console.error('Failed to load session:', err)
+        navigate('/')
       } finally {
         setLoading(false)
       }
