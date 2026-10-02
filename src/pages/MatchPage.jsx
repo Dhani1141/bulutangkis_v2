@@ -167,7 +167,7 @@ export default function MatchPage() {
       {/* ── Header ── */}
       <div className="text-center mb-6 relative">
         <h1 className="text-3xl font-black bg-gradient-to-r from-accent-blue to-accent-purple bg-clip-text text-transparent">
-          BukkuTangkis
+          BuluTangkis
         </h1>
         <p className="text-white/30 text-sm mt-1">{sessionId}</p>
         

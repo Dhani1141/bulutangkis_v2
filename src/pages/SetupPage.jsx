@@ -154,7 +154,7 @@ export default function SetupPage() {
           transition={{ delay: 0.15 }}
         >
           <h1 className="text-5xl md:text-6xl font-black bg-gradient-to-r from-accent-blue via-accent-purple to-accent-cyan bg-clip-text text-transparent mb-3 tracking-tight">
-            BukkuTangkis
+            BuluTangkis
           </h1>
           <p className="text-white/40 text-lg">
             Pengatur Pertandingan &amp; Pencatat Skor Bulu Tangkis
