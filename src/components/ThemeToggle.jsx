@@ -12,11 +12,22 @@ export default function ThemeToggle() {
 
   const toggleTheme = () => {
     const nextTheme = !isDark;
-    setIsDark(nextTheme);
-    if (nextTheme) {
-      document.documentElement.classList.add('dark');
+    
+    const applyTheme = () => {
+      setIsDark(nextTheme);
+      if (nextTheme) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+
+    if (!document.startViewTransition) {
+      applyTheme();
     } else {
-      document.documentElement.classList.remove('dark');
+      document.startViewTransition(() => {
+        applyTheme();
+      });
     }
   };
 
