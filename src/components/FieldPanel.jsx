@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import GlassCard from './GlassCard'
 import EndSessionModal from './EndSessionModal'
+import WakeSlider from './WakeSlider'
 import {
   smartSelectMatch,
   determineWinner,
@@ -38,8 +39,8 @@ export default function FieldPanel({
   onCancelMatch,
 }) {
   // ── State ──
-  const [scoreA, setScoreA] = useState('')
-  const [scoreB, setScoreB] = useState('')
+  const [scoreA, setScoreA] = useState(0)
+  const [scoreB, setScoreB] = useState(0)
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [lastResult, setLastResult] = useState(null) // flash win/lose feedback
@@ -52,18 +53,18 @@ export default function FieldPanel({
   // ── Generate next match ──
   const handleGenerateMatch = useCallback(() => {
     onRequestMatch()
-    setScoreA('')
-    setScoreB('')
+    setScoreA(0)
+    setScoreB(0)
     setLastResult(null)
     setVoiceError('')
   }, [onRequestMatch])
 
   // ── Submit score ──
   const handleSubmitScore = useCallback(async () => {
-    if (!currentMatch || scoreA === '' || scoreB === '') return
+    if (!currentMatch || scoreA === undefined || scoreB === undefined) return
 
-    const numA = parseInt(scoreA, 10)
-    const numB = parseInt(scoreB, 10)
+    const numA = Number(scoreA)
+    const numB = Number(scoreB)
     if (Number.isNaN(numA) || Number.isNaN(numB) || numA < 0 || numB < 0) return
     if (numA === numB) return // no ties
 
@@ -102,8 +103,8 @@ export default function FieldPanel({
       // Clear match after a brief flash
       setTimeout(() => {
         onClearCourt()
-        setScoreA('')
-        setScoreB('')
+        setScoreA(0)
+        setScoreB(0)
       }, 1200)
     } catch (err) {
       console.error('Failed to submit match:', err)
@@ -299,14 +300,25 @@ export default function FieldPanel({
                       <label className="text-xs text-white/30 mb-1 block">
                         Skor Tim A
                       </label>
-                      <input
-                        type="number"
-                        value={scoreA}
-                        onChange={(e) => setScoreA(e.target.value)}
-                        placeholder="0"
-                        className="glass-input w-full text-center text-2xl font-bold"
-                        min="0"
-                      />
+                      <WakeSlider
+                          value={scoreA}
+                          min={0}
+                          max={30}
+                          step={1}
+                          bars={30}
+                          height={56}
+                          restHeight={12}
+                          gap={4}
+                          fillColor="#4f46e5"
+                          trackColor="rgba(255, 255, 255, 0.05)"
+                          sensitivity={1}
+                          reach={6}
+                          skew={0.6}
+                          glide={0.3}
+                          smoothing={100}
+                          showValue={true}
+                          onChange={(val) => setScoreA(val)}
+                        />
                     </div>
                     <span className="text-white/20 font-bold text-lg pb-3 shrink-0">
                       —
@@ -315,14 +327,25 @@ export default function FieldPanel({
                       <label className="text-xs text-white/30 mb-1 block">
                         Skor Tim B
                       </label>
-                      <input
-                        type="number"
-                        value={scoreB}
-                        onChange={(e) => setScoreB(e.target.value)}
-                        placeholder="0"
-                        className="glass-input w-full text-center text-2xl font-bold"
-                        min="0"
-                      />
+                      <WakeSlider
+                          value={scoreB}
+                          min={0}
+                          max={30}
+                          step={1}
+                          bars={30}
+                          height={56}
+                          restHeight={12}
+                          gap={4}
+                          fillColor="#4f46e5"
+                          trackColor="rgba(255, 255, 255, 0.05)"
+                          sensitivity={1}
+                          reach={6}
+                          skew={0.6}
+                          glide={0.3}
+                          smoothing={100}
+                          showValue={true}
+                          onChange={(val) => setScoreB(val)}
+                        />
                     </div>
 
                     {/* Mic Button */}
