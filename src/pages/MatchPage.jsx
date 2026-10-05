@@ -59,20 +59,10 @@ export default function MatchPage() {
       // Filter available players
       const availablePlayers = sessionData.players.filter(p => !playing.has(p))
       
-      // Sort strictly by total_matches (ASC)
-      availablePlayers.sort((a, b) => {
-        const matchesA = playerStats[a]?.total_matches || 0
-        const matchesB = playerStats[b]?.total_matches || 0
-        return matchesA - matchesB
-      })
-
       if (availablePlayers.length < 4) return prev // Not enough players
 
-      // Pick top 4 priority players
-      const top4 = availablePlayers.slice(0, 4)
-      
-      // Balance these 4 players using AI logic
-      const balancedMatch = smartSelectMatch(top4, playerStats)
+      // Balance available players using AI logic
+      const balancedMatch = smartSelectMatch(availablePlayers, playerStats)
       
       if (balancedMatch) {
         return { ...prev, [fieldKey]: balancedMatch }
@@ -97,8 +87,14 @@ export default function MatchPage() {
     })
   }, [])
 
+  const handleCancelMatch = useCallback((fieldKey) => {
+    setActiveMatches(prev => ({ ...prev, [fieldKey]: null }))
+  }, [])
+
   const handleClearCourt = useCallback((fieldKey) => {
     setActiveMatches(prev => ({ ...prev, [fieldKey]: null }))
+    // Also remove from local session data so the panel unmounts
+    setSessionData(prev => prev ? { ...prev, [fieldKey]: false } : prev)
   }, [])
 
   // ── Loading ──
@@ -228,6 +224,7 @@ export default function MatchPage() {
             onRequestMatch={() => handleRequestMatch('field1')}
             onMatchEnd={handleMatchEnd}
             onClearCourt={() => handleClearCourt('field1')}
+            onCancelMatch={() => handleCancelMatch('field1')}
           />
         )}
         {fieldCount === 2 && sessionData.field2 && (
@@ -238,6 +235,7 @@ export default function MatchPage() {
             onRequestMatch={() => handleRequestMatch('field2')}
             onMatchEnd={handleMatchEnd}
             onClearCourt={() => handleClearCourt('field2')}
+            onCancelMatch={() => handleCancelMatch('field2')}
           />
         )}
       </div>

@@ -35,6 +35,7 @@ export default function FieldPanel({
   onRequestMatch,
   onMatchEnd,
   onClearCourt,
+  onCancelMatch,
 }) {
   // ── State ──
   const [scoreA, setScoreA] = useState('')
@@ -356,20 +357,30 @@ export default function FieldPanel({
                     </p>
                   )}
 
-                  <button
-                    onClick={handleSubmitScore}
-                    disabled={isSubmitting || !scoresValid}
-                    className="glass-button-primary w-full mt-4 disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? (
-                      <div className="w-5 h-5 border-2 border-blue-400/30 border-t-blue-400 rounded-full animate-spin" />
-                    ) : (
-                      <>
-                        <Send size={16} />
-                        Submit Pertandingan
-                      </>
-                    )}
-                  </button>
+                  <div className="flex gap-2 mt-4">
+                    <button
+                      onClick={() => onCancelMatch && onCancelMatch()}
+                      disabled={isSubmitting}
+                      className="glass-button-danger px-4 disabled:opacity-30 disabled:cursor-not-allowed"
+                      title="Batalkan Pertandingan"
+                    >
+                      <RotateCcw size={16} />
+                    </button>
+                    <button
+                      onClick={handleSubmitScore}
+                      disabled={isSubmitting || !scoresValid}
+                      className="glass-button-primary flex-1 disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? (
+                        <div className="w-5 h-5 border-2 border-blue-400/30 border-t-blue-400 rounded-full animate-spin" />
+                      ) : (
+                        <>
+                          <Send size={16} />
+                          Submit Pertandingan
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </motion.div>
               )}
             </motion.div>

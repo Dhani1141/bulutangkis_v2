@@ -126,12 +126,12 @@ export async function getGlobalPlayerStats() {
 }
 
 /**
- * Mark a field session as ended.
+ * Mark a field session as ended by removing it from the session data.
  */
 export async function endFieldSession(sessionId, fieldKey) {
   const sessionRef = doc(db, sessionId, 'data')
   await updateDoc(sessionRef, {
-    [`${fieldKey}.status`]: 'ended',
+    [fieldKey]: false,
   })
 }
 
