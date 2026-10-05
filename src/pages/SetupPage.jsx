@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Users, Play, Layers, Shuffle, Trash2, History, Trophy } from 'lucide-react'
 import GlassCard from '../components/GlassCard'
 import JellyRadio from '../components/JellyRadio'
+import PaperCrumple from '../components/PaperCrumple'
 import { createSession, deleteSession, getGlobalPlayerStats } from '../lib/firebaseHelpers'
 
 export default function SetupPage() {
@@ -259,20 +260,35 @@ export default function SetupPage() {
           </div>
 
           {/* Player Tags */}
-          <div className="flex flex-wrap gap-2 max-h-[300px] overflow-y-auto mb-2">
+          <div className="flex flex-wrap gap-2 max-h-[300px] overflow-y-auto mb-2 overflow-x-hidden p-2">
             {players.map((player, index) => (
               player.trim() !== '' && (
-                <div
-                  key={index}
-                  className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5"
-                >
-                  <span className="text-white/90 text-sm font-medium">{player}</span>
-                  <button
-                    onClick={() => removePlayer(index)}
-                    className="text-white/30 hover:text-red-400 transition-colors"
+                <div key={index} className="relative w-fit h-fit z-10 hover:z-20">
+                  <PaperCrumple
+                    releaseBehavior="discard"
+                    crumpleAmount={0.85}
+                    crumpleDuration={0.55}
+                    releaseDuration={0.4}
+                    foldCount={6}
+                    foldSharpness={0.6}
+                    wrinkleDepth={0.65}
+                    creaseStrength={0.18}
+                    paperColor="rgba(255, 255, 255, 0.05)"
+                    paperTexture={0.08}
+                    width={150}
+                    height={40}
+                    sceneHeight={40}
+                    onStateChange={(state) => {
+                      if (state === 'crumpled') {
+                        setTimeout(() => removePlayer(index), 150);
+                      }
+                    }}
                   >
-                    <Trash2 size={14} />
-                  </button>
+                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 min-w-[120px] justify-between cursor-grab active:cursor-grabbing">
+                      <span className="text-white/90 text-sm font-medium">{player}</span>
+                      <span className="text-white/30"><Trash2 size={14} /></span>
+                    </div>
+                  </PaperCrumple>
                 </div>
               )
             ))}
