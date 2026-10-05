@@ -4,7 +4,7 @@ import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { animate, motion, motionValue, useReducedMotion, useTransform } from 'framer-motion';
 
 const DEFAULT_ITEMS = ['Off', 'Low', 'Medium', 'High', 'Max'];
-const SIZES = { sm: [28, 12, 12], md: [36, 13, 16], lg: [44, 14, 20] };
+const SIZES = { sm: [28, 12, 12], md: [36, 13, 16], lg: [44, 14, 20], xl: [52, 16, 24] };
 
 const spring = (k, m, bounce) => ({
   type: 'spring',
@@ -200,12 +200,12 @@ export default function JellyRadio({
           aria-checked={i === at}
           tabIndex={i === at ? 0 : -1}
           disabled={disabled || !!it.disabled}
-          className="group/chip relative m-0 cursor-pointer touch-manipulation border-0 bg-transparent p-0 text-inherit outline-none [font:inherit] origin-center [-webkit-tap-highlight-color:transparent] data-[on=true]:cursor-default disabled:cursor-default disabled:opacity-40 group-data-[disabled]:disabled:opacity-100"
+          className={`group/chip relative m-0 cursor-pointer touch-manipulation border-0 bg-transparent p-0 text-inherit outline-none [font:inherit] origin-center [-webkit-tap-highlight-color:transparent] data-[on=true]:cursor-default disabled:cursor-default disabled:opacity-40 group-data-[disabled]:disabled:opacity-100 ${className.includes('w-full') ? 'flex-1' : ''}`}
           data-on={i === at ? 'true' : 'false'}
           onClick={e => commit(i, e.detail === 0)}
           onKeyDown={e => onKeyDown(e, i)}
         >
-          <span className="relative inline-flex items-center justify-center gap-[0.4em] overflow-hidden rounded-[var(--jr-radius)] bg-[var(--jr-chip)] leading-none font-medium whitespace-nowrap [color:var(--jr-text)] [height:var(--jr-h)] [padding:0_var(--jr-px)] [font-size:var(--jr-font)] [transition:transform_160ms_cubic-bezier(0.23,1,0.32,1),background-color_200ms_ease,color_200ms_ease] group-active/chip:scale-[0.97] motion-reduce:group-active/chip:scale-100 group-data-[on=true]/chip:bg-[var(--jr-active)] group-data-[on=true]/chip:[color:var(--jr-active-text)] before:pointer-events-none before:absolute before:inset-0 before:bg-[var(--jr-text)] before:opacity-0 before:[transition:opacity_160ms_ease] before:content-[''] [@media(hover:hover)_and_(pointer:fine)]:group-hover/chip:group-enabled/chip:group-data-[on=false]/chip:before:opacity-[0.11]">
+          <span className={`relative inline-flex w-full items-center justify-center gap-[0.4em] overflow-hidden rounded-[var(--jr-radius)] bg-[var(--jr-chip)] leading-none font-semibold whitespace-nowrap [color:var(--jr-text)] [height:var(--jr-h)] [padding:0_var(--jr-px)] [font-size:var(--jr-font)] [transition:transform_160ms_cubic-bezier(0.23,1,0.32,1),background-color_200ms_ease,color_200ms_ease] group-active/chip:scale-[0.97] motion-reduce:group-active/chip:scale-100 group-data-[on=true]/chip:bg-[var(--jr-active)] group-data-[on=true]/chip:[color:var(--jr-active-text)] before:pointer-events-none before:absolute before:inset-0 before:bg-[var(--jr-text)] before:opacity-0 before:[transition:opacity_160ms_ease] before:content-[''] [@media(hover:hover)_and_(pointer:fine)]:group-hover/chip:group-enabled/chip:group-data-[on=false]/chip:before:opacity-[0.11]`}>
             {it.icon ? <span className="inline-flex">{it.icon}</span> : null}
             <span className="jelly-radio__label">{it.label}</span>
           </span>

@@ -202,8 +202,9 @@ export default function SetupPage() {
             <Shuffle size={20} className="text-accent-purple" />
             Jumlah Lapangan
           </h2>
-          <div className="flex justify-center">
+          <div className="flex w-full">
             <JellyRadio
+              className="w-full flex"
               items={['1 Lapangan', '2 Lapangan']}
               defaultValue={fieldCount === 1 ? '1 Lapangan' : '2 Lapangan'} 
               onChange={(value) => {
@@ -214,9 +215,9 @@ export default function SetupPage() {
               activeColor="#4f46e5" 
               textColor="#a1a1aa" 
               activeTextColor="#ffffff"
-              size="md"
-              gap={8}
-              radius={18}
+              size="xl"
+              gap={12}
+              radius={999}
               swell={0.2}
               barge={6}
               shrink={0.05}
