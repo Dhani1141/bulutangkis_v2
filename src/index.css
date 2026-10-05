@@ -43,6 +43,19 @@ html:not(.dark) .border-white\/20 { border-color: rgba(0,0,0,0.2) !important; }
 html:not(.dark) .bg-\[\#15151e\] { background-color: rgba(0,0,0,0.03) !important; }
 html:not(.dark) .bg-\[\#1a1a2e\] { background-color: rgba(0,0,0,0.05) !important; }
 
+
+/* WakeSlider and JellyRadio light mode fixes */
+html:not(.dark) .wake-slider {
+  --ws-track: rgba(0,0,0,0.08) !important;
+}
+html:not(.dark) .wake-slider__value {
+  color: #334155 !important;
+}
+
+html:not(.dark) [style*="--jr-chip"] {
+  --jr-chip: rgba(0,0,0,0.08) !important;
+  --jr-text: #475569 !important;
+}
 /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
