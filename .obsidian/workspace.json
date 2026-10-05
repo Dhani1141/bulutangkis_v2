@@ -183,6 +183,8 @@
   },
   "active": "513e4b8f80d3a262",
   "lastOpenFiles": [
+    "dist/assets/index-BU4tcQSj.js",
+    "dist/assets/index-H9CNy9bv.css",
     "vite.config.js.timestamp-1791183840421-4514f43e391bc.mjs",
     "dist/index.html",
     "dist/assets/index-TUEXSiLt.css",
@@ -192,8 +194,6 @@
     "dist/assets/index-W2NP5di0.js",
     "transform.cjs",
     "transform.js",
-    "src/components/PaperCrumple.jsx",
-    "node_modules/three/examples/jsm/inspector/extensions/color-grading/modules/WhiteBalanceModule.js",
     "node_modules/three/examples/jsm/libs/draco/README.md",
     "node_modules/three/examples/jsm/libs/basis/README.md",
     "node_modules/three/src/nodes/materialx/DISCLAIMER.md",

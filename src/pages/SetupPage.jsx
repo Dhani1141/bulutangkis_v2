@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Users, Play, Layers, Shuffle, Trash2, History, Trophy } from 'lucide-react'
 import GlassCard from '../components/GlassCard'
 import JellyRadio from '../components/JellyRadio'
-import PaperCrumple from '../components/PaperCrumple'
 import { createSession, deleteSession, getGlobalPlayerStats } from '../lib/firebaseHelpers'
 
 export default function SetupPage() {
@@ -260,38 +259,30 @@ export default function SetupPage() {
           </div>
 
           {/* Player Tags */}
-          <div className="flex flex-wrap gap-2 max-h-[300px] overflow-y-auto mb-2 overflow-x-hidden p-2">
-            {players.map((player, index) => (
-              player.trim() !== '' && (
-                <div key={index} className="relative w-[150px] h-[40px] z-10 hover:z-20">
-                  <PaperCrumple
-                    releaseBehavior="discard"
-                    crumpleAmount={0.85}
-                    crumpleDuration={0.55}
-                    releaseDuration={0.4}
-                    foldCount={6}
-                    foldSharpness={0.6}
-                    wrinkleDepth={0.65}
-                    creaseStrength={0.18}
-                    paperColor="rgba(255, 255, 255, 0.05)"
-                    paperTexture={0.08}
-                    width={150}
-                    height={40}
-                    sceneHeight={40}
-                    onStateChange={(state) => {
-                      if (state === 'crumpled') {
-                        setTimeout(() => removePlayer(index), 150);
-                      }
-                    }}
+          <div className="flex flex-wrap gap-2 max-h-[300px] overflow-y-auto mb-2 p-2">
+            <AnimatePresence mode="popLayout">
+              {players.map((player, index) => (
+                player.trim() !== '' && (
+                  <motion.div
+                    key={`${player}-${index}`}
+                    layout
+                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0, y: -20, transition: { duration: 0.2 } }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5"
                   >
-                    <div className="flex items-center w-full h-full gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 justify-between cursor-grab active:cursor-grabbing">
-                      <span className="text-white/90 text-sm font-medium truncate">{player}</span>
-                      <span className="text-white/30 shrink-0"><Trash2 size={14} /></span>
-                    </div>
-                  </PaperCrumple>
-                </div>
-              )
-            ))}
+                    <span className="text-white/90 text-sm font-medium">{player}</span>
+                    <button
+                      onClick={() => removePlayer(index)}
+                      className="text-white/30 hover:text-red-400 transition-colors cursor-pointer"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </motion.div>
+                )
+              ))}
+            </AnimatePresence>
           </div>
 
           {/* Historical Players (Quick Add) */}
