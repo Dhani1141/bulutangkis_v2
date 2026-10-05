@@ -323,8 +323,8 @@ const PaperCrumple = ({
     const initialHeight = Math.max(1, finite(height, 400));
     const initialScale = Math.min(
       1,
-      Math.max(1, initialRect.width - 48) / initialWidth,
-      Math.max(1, initialRect.height - 48) / initialHeight
+      Math.max(1, initialRect.width) / initialWidth,
+      Math.max(1, initialRect.height) / initialHeight
     );
     root.style.setProperty('--pc-image-width', `${initialWidth * initialScale}px`);
     root.style.setProperty('--pc-image-height', `${initialHeight * initialScale}px`);
@@ -697,7 +697,7 @@ const PaperCrumple = ({
       viewportHeight = Math.max(1, rect.height);
       scale =
         paperWidth *
-        Math.min(1, Math.max(1, viewportWidth - 48) / paperWidth, Math.max(1, viewportHeight - 48) / paperHeight);
+        Math.min(1, Math.max(1, viewportWidth) / paperWidth, Math.max(1, viewportHeight) / paperHeight);
       sheet.scale.setScalar(scale);
       camera.aspect = viewportWidth / viewportHeight;
       camera.position.z = viewportHeight / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));

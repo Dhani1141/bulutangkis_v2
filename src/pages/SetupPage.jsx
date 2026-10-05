@@ -263,7 +263,7 @@ export default function SetupPage() {
           <div className="flex flex-wrap gap-2 max-h-[300px] overflow-y-auto mb-2 overflow-x-hidden p-2">
             {players.map((player, index) => (
               player.trim() !== '' && (
-                <div key={index} className="relative w-fit h-fit z-10 hover:z-20">
+                <div key={index} className="relative w-[150px] h-[40px] z-10 hover:z-20">
                   <PaperCrumple
                     releaseBehavior="discard"
                     crumpleAmount={0.85}
@@ -284,9 +284,9 @@ export default function SetupPage() {
                       }
                     }}
                   >
-                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 min-w-[120px] justify-between cursor-grab active:cursor-grabbing">
-                      <span className="text-white/90 text-sm font-medium">{player}</span>
-                      <span className="text-white/30"><Trash2 size={14} /></span>
+                    <div className="flex items-center w-full h-full gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 justify-between cursor-grab active:cursor-grabbing">
+                      <span className="text-white/90 text-sm font-medium truncate">{player}</span>
+                      <span className="text-white/30 shrink-0"><Trash2 size={14} /></span>
                     </div>
                   </PaperCrumple>
                 </div>
