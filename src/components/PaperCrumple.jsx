@@ -412,8 +412,8 @@ const PaperCrumple = ({
       metalness: 0,
       bumpMap: grain,
       bumpScale: clamp(finite(paperTexture, 0.08), 0, 1) * 0.32,
-      alphaTest: 0.04,
-      alphaToCoverage: true,
+      transparent: true,
+      alphaTest: 0,
       flatShading: false
     };
     const frontMaterial = new THREE.MeshStandardMaterial({ ...materialOptions, side: THREE.FrontSide });
