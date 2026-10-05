@@ -59,7 +59,7 @@ export default function LeaderboardPage() {
       // Sort highest win rate first
       playersList.sort((a, b) => b.winRate - a.winRate)
 
-      const commentary = await getAICommentary(playersList, "the entire session", (msg) => {
+      const commentary = await getAICommentary(playersList, "seluruh sesi", (msg) => {
         setAiLoadingMsg(msg);
       })
       

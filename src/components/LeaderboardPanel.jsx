@@ -108,8 +108,7 @@ export default function LeaderboardPanel({ fieldKey, playerStats }) {
                       {player?.name || 'Unknown'}
                     </p>
                     <p className="text-xs text-white/30">
-                      {player?.totalWins || 0}W — {player?.totalMatches || 0} match
-                      {player?.totalMatches !== 1 ? 'es' : ''}
+                      {player?.totalWins || 0} menang — {player?.totalMatches || 0} pertandingan
                     </p>
                   </div>
 

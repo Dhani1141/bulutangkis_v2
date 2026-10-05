@@ -92,9 +92,8 @@ export default function MatchPage() {
   }, [])
 
   const handleClearCourt = useCallback((fieldKey) => {
+    // Called after each submitted match — only frees the court for the next match
     setActiveMatches(prev => ({ ...prev, [fieldKey]: null }))
-    // Also remove from local session data so the panel unmounts
-    setSessionData(prev => prev ? { ...prev, [fieldKey]: false } : prev)
   }, [])
 
   // ── Loading ──

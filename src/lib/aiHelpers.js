@@ -5,35 +5,36 @@
  * The API key is loaded from the VITE_AI_API_KEY env variable.
  */
 
-export async function getAICommentary(players, fieldLabel = 'the session', onStatusUpdate = () => {}) {
+export async function getAICommentary(players, fieldLabel = 'seluruh sesi', onStatusUpdate = () => {}) {
   const apiKey = import.meta.env.VITE_AI_API_KEY
   if (!apiKey) {
-    return '⚙️ AI API key not configured. Add VITE_AI_API_KEY to your .env.local file.'
+    return '⚙️ API key AI belum dikonfigurasi. Tambahkan VITE_AI_API_KEY ke file .env.local Anda.'
   }
 
   const statsBlock = players
     .map(
       (p, i) =>
-        `${i + 1}. ${p.name} — ${p.totalMatches} match${p.totalMatches !== 1 ? 'es' : ''}, ` +
-        `${p.totalWins} win${p.totalWins !== 1 ? 's' : ''}, ` +
-        `${p.winRate.toFixed(1)}% win rate`,
+        `${i + 1}. ${p.name} — ${p.totalMatches} pertandingan, ` +
+        `${p.totalWins} menang, ` +
+        `win rate ${p.winRate.toFixed(1)}%`,
     )
     .join('\n')
 
-  const prompt = `You are a humorous, witty, and slightly roasting sports commentator wrapping up a casual badminton session for ${fieldLabel}.
+  const prompt = `Kamu adalah komentator olahraga yang lucu, jenaka, dan sedikit suka meledek, yang sedang menutup sesi bulu tangkis santai untuk ${fieldLabel}.
 
-Here are the final player standings:
+Berikut klasemen akhir para pemain:
 
 ${statsBlock}
 
-Instructions:
-- Summarise the session in a fun, entertaining way (150-200 words max).
-- Praise the top performers with flair.
-- Gently roast the bottom performers — be funny, never mean.
-- Mention any interesting stats (perfect win rate, someone who never won, close rivalries).
-- Use a lively commentator voice with energy and personality.
-- Do NOT use markdown formatting, bullet lists, or headers — write flowing prose as if you are speaking live on a mic.
-- End with a catchy sign-off line.`
+Instruksi:
+- WAJIB menulis seluruh jawaban dalam Bahasa Indonesia yang santai dan gaul (boleh sedikit bahasa sehari-hari), JANGAN gunakan Bahasa Inggris.
+- Rangkum sesi ini dengan cara yang seru dan menghibur (maksimal 150-200 kata).
+- Puji pemain dengan performa terbaik secara heboh.
+- Ledek pemain dengan performa terbawah secara halus — lucu, tapi jangan kasar.
+- Sebutkan statistik menarik (win rate sempurna, pemain yang belum pernah menang, persaingan ketat).
+- Gunakan gaya komentator yang energik dan penuh kepribadian.
+- JANGAN gunakan format markdown, bullet list, atau judul — tulis dalam paragraf mengalir seperti sedang siaran langsung.
+- Akhiri dengan kalimat penutup yang catchy.`
 
   const maxRetries = 2;
   let attempt = 0;

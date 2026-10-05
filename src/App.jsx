@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
-import { AnimatePresence } from 'framer-motion'
 import SetupPage from './pages/SetupPage'
 import MatchPage from './pages/MatchPage'
 import LeaderboardPage from './pages/LeaderboardPage'
@@ -8,14 +7,15 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 function AnimatedRoutes() {
   const location = useLocation()
 
+  // NOTE: No route-level AnimatePresence mode="wait" here. Exit animations of a
+  // page containing `layout`-animated children could hang, so the next page
+  // never mounted (blank screen until refresh). Pages still animate on enter.
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<SetupPage />} />
-        <Route path="/match" element={<MatchPage />} />
-        <Route path="/leaderboard" element={<LeaderboardPage />} />
-      </Routes>
-    </AnimatePresence>
+    <Routes location={location} key={location.pathname}>
+      <Route path="/" element={<SetupPage />} />
+      <Route path="/match" element={<MatchPage />} />
+      <Route path="/leaderboard" element={<LeaderboardPage />} />
+    </Routes>
   )
 }
 
