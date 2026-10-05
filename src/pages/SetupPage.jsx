@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Users, Play, Layers, Shuffle, Trash2, History, Trophy } from 'lucide-react'
 import GlassCard from '../components/GlassCard'
+import JellyRadio from '../components/JellyRadio'
 import { createSession, deleteSession, getGlobalPlayerStats } from '../lib/firebaseHelpers'
 
 export default function SetupPage() {
@@ -201,20 +202,29 @@ export default function SetupPage() {
             <Shuffle size={20} className="text-accent-purple" />
             Jumlah Lapangan
           </h2>
-          <div className="flex gap-3">
-            {[1, 2].map((count) => (
-              <button
-                key={count}
-                onClick={() => setFieldCount(count)}
-                className={`flex-1 py-3 rounded-full font-semibold transition-all duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] border ${
-                  fieldCount === count
-                    ? 'bg-accent-blue/20 border-accent-blue/40 text-accent-blue shadow-[inset_0_2px_4px_rgba(255,255,255,0.1)]'
-                    : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/50'
-                }`}
-              >
-                {count} Lapangan
-              </button>
-            ))}
+          <div className="flex justify-center">
+            <JellyRadio
+              items={['1 Lapangan', '2 Lapangan']}
+              defaultValue={fieldCount === 1 ? '1 Lapangan' : '2 Lapangan'} 
+              onChange={(value) => {
+                const selectedCourts = value === '1 Lapangan' ? 1 : 2;
+                setFieldCount(selectedCourts);
+              }}
+              chipColor="rgba(255, 255, 255, 0.05)" 
+              activeColor="#4f46e5" 
+              textColor="#a1a1aa" 
+              activeTextColor="#ffffff"
+              size="md"
+              gap={8}
+              radius={18}
+              swell={0.2}
+              barge={6}
+              shrink={0.05}
+              jelly={1}
+              bounce={0.25}
+              stagger={22}
+              stiffness={580}
+            />
           </div>
         </GlassCard>
 
