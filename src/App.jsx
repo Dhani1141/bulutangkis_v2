@@ -3,6 +3,7 @@ import SetupPage from './pages/SetupPage'
 import MatchPage from './pages/MatchPage'
 import LeaderboardPage from './pages/LeaderboardPage'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import ThemeToggle from './components/ThemeToggle'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -23,6 +24,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen relative overflow-hidden">
+        
+        <div className="absolute top-4 right-4 z-50">
+          <ThemeToggle />
+        </div>
+
         {/* Ambient floating background blobs */}
         <div className="fixed inset-0 pointer-events-none z-0" aria-hidden="true">
           <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-accent-blue/20 blur-[120px] animate-float" />
