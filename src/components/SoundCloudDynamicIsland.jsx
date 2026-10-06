@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ReactPlayer from 'react-player';
-import { Play, Pause, Search, ArrowLeft, Music, SkipForward, SkipBack } from 'lucide-react'; // Adjust import based on your icon library
+import { Play, Pause, Search, ArrowLeft, Music, SkipForward, SkipBack } from 'lucide-react';
 
 const SC_PLAYLIST = [
   { id: 1, title: 'FUNK DO BOUNCE (Slowed)', artist: 'Ariis', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/78/bb/09/78bb0943-54db-5906-270e-f51b7f4211f3/mzaf_11235458155300568117.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
@@ -24,6 +23,8 @@ const SoundCloudDynamicIsland = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [played, setPlayed] = useState(0);
+  
+  const audioRef = useRef(null);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -36,6 +37,26 @@ const SoundCloudDynamicIsland = () => {
       setSearchResults(filtered);
     }
   }, [searchQuery]);
+
+  // Sync isPlaying state with native audio element
+  useEffect(() => {
+    if (!audioRef.current) return;
+    
+    if (isPlaying) {
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error("Play prevented:", error);
+          // Only force pause state if it's a true rejection, not an abort
+          if (error.name !== 'AbortError') {
+            setIsPlaying(false);
+          }
+        });
+      }
+    } else {
+      audioRef.current.pause();
+    }
+  }, [isPlaying, currentTrack]);
 
   const formatTime = (seconds) => {
     if (!seconds || isNaN(seconds)) return '0:00';
@@ -66,24 +87,15 @@ const SoundCloudDynamicIsland = () => {
 
   return (
     <div className="relative">
-      {/* HIDDEN REACT PLAYER FOR SC AUDIO */}
-      <div style={{ position: 'fixed', top: '-9999px', left: '-9999px', width: '300px', height: '300px', pointerEvents: 'none', zIndex: -50 }}>
-        <ReactPlayer 
-          url={currentTrack.stream_url} 
-          playing={isPlaying} 
-          controls={false}
-          width="300px"
-          height="300px"
-          onDuration={(d) => setDuration(d)}
-          onProgress={(p) => setPlayed(p.playedSeconds)}
-          onEnded={nextTrack}
-          onError={(e) => {
-            console.error("Audio Player Error:", e);
-            setIsPlaying(false);
-          }}
-          
-        />
-      </div>
+      {/* NATIVE HTML5 AUDIO ELEMENT (No ReactPlayer iframe bugs!) */}
+      <audio
+        ref={audioRef}
+        src={currentTrack.stream_url}
+        onTimeUpdate={() => setPlayed(audioRef.current?.currentTime || 0)}
+        onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}
+        onEnded={nextTrack}
+        preload="auto"
+      />
 
       {/* DYNAMIC ISLAND UI */}
       <motion.div
@@ -116,7 +128,7 @@ const SoundCloudDynamicIsland = () => {
                 <div className="flex items-center gap-1.5">
                   <button onClick={prevTrack} className="text-zinc-400 hover:text-white transition active:scale-90"><SkipBack size={16} /></button>
                   <button onClick={() => setIsPlaying(!isPlaying)} className="p-2 bg-white text-zinc-950 rounded-full hover:scale-105 transition active:scale-95 mx-1">
-                    {isPlaying ? <Pause size={14} variant="bulk" /> : <Play size={14} variant="bulk" />}
+                    {isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" />}
                   </button>
                   <button onClick={nextTrack} className="text-zinc-400 hover:text-white transition active:scale-90"><SkipForward size={16} /></button>
                   <div className="w-[1px] h-4 bg-white/10 mx-1"></div>
