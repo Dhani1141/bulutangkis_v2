@@ -3,14 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, Search, ArrowLeft, Music, SkipForward, SkipBack } from 'lucide-react';
 
 const SC_PLAYLIST = [
-  { id: 1, title: 'FUNK DO BOUNCE (Slowed)', artist: 'Ariis', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/78/bb/09/78bb0943-54db-5906-270e-f51b7f4211f3/mzaf_11235458155300568117.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
-  { id: 2, title: 'Brazilian Phonk Automotivo', artist: 'PHONK & Montagem', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/83/0b/fe/830bfe11-4ea8-da4d-32b5-fe72854cc868/mzaf_5769007449919144696.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
-  { id: 3, title: 'Dark Pulse (Phonk)', artist: 'OCD F42', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e3/06/21/e30621b9-0a06-4927-8779-f58a14839ec9/mzaf_5957398691056077498.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
-  { id: 4, title: 'Dark Pulse (Slowed)', artist: 'Phonk Montagem', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e8/a7/74/e8a774f4-8a99-655c-236d-c66321353374/mzaf_13899044644026412254.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
-  { id: 5, title: 'Dark Pulse (Slowed Reverb)', artist: 'PHONK', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b9/e8/88/b9e8884a-31d9-5fa6-4780-9e3e3336582e/mzaf_11372573903284384660.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
-  { id: 6, title: 'Dark Engine (Sped Up)', artist: 'OCD F42', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/96/95/17/96951770-45f8-b723-5579-132d362f5068/mzaf_443424279666277532.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
-  { id: 7, title: 'Dark Engine (Slowed)', artist: 'Phonk Montagem', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/80/d3/52/80d35249-f316-7753-1794-145c83b924bd/mzaf_11231361559234470985.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
-  { id: 8, title: 'Montagem Game (Nightcore)', artist: 'PHONK', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/07/85/94/07859483-9b93-6951-5f33-5bdd701444b3/mzaf_15934730209694146481.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' }
+  { id: 1, title: 'Montagem Tomada x Dame Un Grrr', artist: 'Danna Jo', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/1gm6vpQ/stream?app_name=BuluTangkisApp', artwork_url: 'https://audius-content-10.figment.io/content/01JZPC618C3Z1CZXEGDJPN6V2R/150x150.jpg' },
+  { id: 2, title: 'MEMPHIS - PHONK', artist: 'LAIMON 👨🏻‍🚀', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/wGxZ2/stream?app_name=BuluTangkisApp', artwork_url: 'https://val004.open-audio-validator.com/content/Qmaj3yQNMba6ouXcSyV3JHZhucZX4rHyP8faqU4CWV89ma/150x150.jpg' },
+  { id: 3, title: 'Ecco Phonk', artist: 'Weaver Beats', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/NlV7dpp/stream?app_name=BuluTangkisApp', artwork_url: 'https://v.monophonic.digital/content/01JB0V3ZKMVGMVGVF8J3J50F0V/150x150.jpg' },
+  { id: 4, title: 'I Tried Phonk', artist: 'Trvpinstein Beats', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/6kOvR7Z/stream?app_name=BuluTangkisApp', artwork_url: 'https://v.monophonic.digital/content/Qmba7PosQf6W9NKF4toqP5fAQbPAzpHgyH6PhjDoQ8kKeL/150x150.jpg' },
+  { id: 5, title: 'Phree Phonk', artist: 'OJ TOMI', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/yyAxrWr/stream?app_name=BuluTangkisApp', artwork_url: 'https://audius-creator-13.theblueprint.xyz/content/01JYKQAHRYWX0Z2EMK830JSJ3Q/150x150.jpg' },
+  { id: 6, title: 'Tholy Phonk', artist: 'THOLY', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/2l62pqp/stream?app_name=BuluTangkisApp', artwork_url: 'https://audius-creator-11.theblueprint.xyz/content/01K2J7SHKZ1VK3M17G965FPD9Y/150x150.jpg' },
+  { id: 7, title: '1995 (PHONK REMIX)', artist: 'Music Altern Dj', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/qZYjoYM/stream?app_name=BuluTangkisApp', artwork_url: 'https://audius-content-13.figment.io/content/01KD6DVGWQ5MVFH5RSBG6RP234/150x150.jpg' },
+  { id: 8, title: 'METATRADER Phonk', artist: 'Phonkid Prod', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/5jlM7/stream?app_name=BuluTangkisApp', artwork_url: 'https://v.monophonic.digital/content/QmULVrHFbbmaELAbz6BqmjacpuxEXWBQJVhfxRxYZV4GN3/150x150.jpg' }
 ];
 
 const SoundCloudDynamicIsland = () => {
@@ -120,7 +120,7 @@ const SoundCloudDynamicIsland = () => {
                   />
                   <div className="flex flex-col truncate">
                     <span className="text-xs font-bold truncate text-white">{currentTrack.title}</span>
-                    <span className="text-[10px] text-zinc-400 truncate tracking-wider">SOUNDCLOUD</span>
+                    <span className="text-[10px] text-zinc-400 truncate tracking-wider">AUDIUS</span>
                   </div>
                 </div>
 
