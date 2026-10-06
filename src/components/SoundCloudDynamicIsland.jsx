@@ -89,12 +89,14 @@ const SoundCloudDynamicIsland = () => {
   // Player controls
   const togglePlay = () => setIsPlaying(!isPlaying);
 
-  const handleSelectTrack = (track) => {
-    setCurrentTrack(track);
-    setIsSearching(false);
-    setSearchQuery('');
-    setIsPlaying(true);
-  };
+  const [isPlayerReady, setIsPlayerReady] = useState(false);
+    const handleSelectTrack = (track) => {
+      setIsPlayerReady(false);
+      setIsPlaying(false);
+      setCurrentTrack(track);
+      setIsSearching(false);
+      setSearchQuery('');
+    };
 
   return (
     <div className="relative">
