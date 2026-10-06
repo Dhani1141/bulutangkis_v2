@@ -13,7 +13,7 @@ const SoundCloudDynamicIsland = () => {
   const [currentTrack, setCurrentTrack] = useState({
     title: "dhani - Smash Anthem (SC)",
     artist: "Dhani",
-    stream_url: "", 
+    stream_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", 
     id: 1,
     artwork_url: "https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=80&q=80" // Placeholder SC logo/artwork
   });
@@ -102,9 +102,9 @@ const SoundCloudDynamicIsland = () => {
         url={currentTrack.stream_url} 
         playing={isPlaying} 
         controls={false}
-        width="0"
-        height="0"
-        style={{ display: 'none' }}
+        width="1px"
+        height="1px"
+        style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
         onProgress={handleProgress}
         onDuration={handleDuration}
         onEnded={handleEnded}
