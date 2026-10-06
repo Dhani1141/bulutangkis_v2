@@ -98,33 +98,29 @@ const SoundCloudDynamicIsland = () => {
 
   return (
     <div className="relative">
-      <div style={{ position: 'absolute', width: '200px', height: '200px', opacity: 0.01, pointerEvents: 'none', top: 0, left: 0, zIndex: -10 }}>
+      <div style={{ position: 'absolute', width: '2px', height: '2px', overflow: 'hidden', top: 0, left: 0, zIndex: -50 }}>
         <ReactPlayer 
           url={currentTrack.stream_url} 
           playing={isPlaying} 
           controls={false}
-          volume={1}
-          muted={false}
-          progressInterval={1000}
-          width="100%"
-          height="100%"
+          width="2px"
+          height="2px"
           onProgress={handleProgress}
           onDuration={handleDuration}
-          onEnded={handleEnded}
-          onReady={() => console.log('YouTube Player Ready')}
-          onStart={() => console.log('YouTube Player Started')}
-          onPlay={() => console.log('YouTube Player Playing')}
-          onBuffer={() => console.log('YouTube Player Buffering')}
+          onEnded={() => {
+            console.log("YouTube Player Ended naturally");
+            handleEnded();
+          }}
           onError={(error) => {
             console.error("YouTube Player Error:", error);
             setIsPlaying(false);
-            alert("Waduh! Lagu ini dikunci hak cipta sama YouTube (Embed Blocked). Coba cari versi 'Lirik' atau 'Cover'-nya ya bre!");
           }}
           config={{
             youtube: {
               playerVars: { 
                 origin: typeof window !== 'undefined' ? window.location.origin : '',
-                playsinline: 1
+                playsinline: 1,
+                autoplay: 1
               }
             }
           }}
