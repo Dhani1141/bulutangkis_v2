@@ -98,7 +98,7 @@ const SoundCloudDynamicIsland = () => {
 
   return (
     <div className="relative">
-      <div style={{ position: 'absolute', width: '200px', height: '200px', overflow: 'hidden', opacity: 0, pointerEvents: 'none', top: '-1000px', left: '-1000px', zIndex: -1 }}>
+      <div style={{ position: 'absolute', width: '50px', height: '50px', overflow: 'hidden', opacity: 0.01, pointerEvents: 'none', top: '0px', left: '0px', zIndex: -10 }}>
         <ReactPlayer 
           url={currentTrack.stream_url} 
           playing={isPlaying} 
@@ -108,6 +108,10 @@ const SoundCloudDynamicIsland = () => {
           onProgress={handleProgress}
           onDuration={handleDuration}
           onEnded={handleEnded}
+          onReady={() => console.log('YouTube Player Ready')}
+          onStart={() => console.log('YouTube Player Started')}
+          onPlay={() => console.log('YouTube Player Playing')}
+          onBuffer={() => console.log('YouTube Player Buffering')}
           onError={(error) => {
             console.error("YouTube Player Error:", error);
             setIsPlaying(false);
