@@ -54,17 +54,17 @@ const SoundCloudDynamicIsland = () => {
     const delayDebounceFn = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(searchQuery)}&media=music&entity=song&limit=10`);
-        if (response.ok) {
-          const data = await response.json();
-          setSearchResults(data.results.map(track => ({
-            id: track.trackId,
-            title: track.trackName,
-            artist: track.artistName,
-            stream_url: track.previewUrl,
-            artwork_url: track.artworkUrl100
-          })));
-        } else {
+        const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(searchQuery)}&type=video&key=AIzaSyBKgo6xvjnq_z5vdvkF3UgXE4CI6I-hpHM`);
+          if (response.ok) {
+            const data = await response.json();
+            setSearchResults(data.items.map(item => ({
+              id: item.id.videoId,
+              title: item.snippet.title,
+              artist: item.snippet.channelTitle,
+              stream_url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+              artwork_url: item.snippet.thumbnails.default.url
+            })));
+          } else {
           // Fallback mocks if API fails or lacks Client ID
           setSearchResults([
             { id: 101, title: 'Akmal - Smash Kanan', artist: 'Sesi Badminton', artwork_url: "https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=80&q=80" },
