@@ -19,8 +19,7 @@ const SoundCloudDynamicIsland = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(new Audio()); // Playback engine
 
-  const CLIENT_ID = 'YOUR_SOUNDCLOUD_CLIENT_ID'; // Replace with SC Client ID or let it fallback
-
+  
   // Fetch search results from SoundCloud or fallback to popular badminton jam
   useEffect(() => {
     if (!searchQuery) {
@@ -30,15 +29,15 @@ const SoundCloudDynamicIsland = () => {
     const delayDebounceFn = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`https://api.soundcloud.com/tracks?q=${encodeURIComponent(searchQuery)}&client_id=${CLIENT_ID}&limit=5`);
+        const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(searchQuery)}&media=music&entity=song&limit=10`);
         if (response.ok) {
           const data = await response.json();
-          setSearchResults(data.map(track => ({
-            id: track.id,
-            title: track.title,
-            artist: track.user?.username || 'SC Artist',
-            stream_url: track.stream_url ? `${track.stream_url}?client_id=${CLIENT_ID}` : "",
-            artwork_url: track.artwork_url || "https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=80&q=80"
+          setSearchResults(data.results.map(track => ({
+            id: track.trackId,
+            title: track.trackName,
+            artist: track.artistName,
+            stream_url: track.previewUrl,
+            artwork_url: track.artworkUrl100
           })));
         } else {
           // Fallback mocks if API fails or lacks Client ID
