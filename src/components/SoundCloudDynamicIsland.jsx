@@ -67,19 +67,26 @@ const SoundCloudDynamicIsland = () => {
   return (
     <div className="relative">
       {/* HIDDEN REACT PLAYER FOR SC AUDIO */}
-      <div style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: '1px', height: '1px', zIndex: -50, overflow: 'hidden' }}>
+      <div style={{ position: 'fixed', top: '-9999px', left: '-9999px', width: '300px', height: '300px', pointerEvents: 'none', zIndex: -50 }}>
         <ReactPlayer 
           url={currentTrack.stream_url} 
           playing={isPlaying} 
           controls={false}
-          width="1px"
-          height="1px"
+          width="300px"
+          height="300px"
           onDuration={(d) => setDuration(d)}
           onProgress={(p) => setPlayed(p.playedSeconds)}
           onEnded={nextTrack}
           onError={(e) => {
             console.error("Audio Player Error:", e);
             setIsPlaying(false);
+          }}
+          config={{
+            soundcloud: {
+              options: {
+                auto_play: true
+              }
+            }
           }}
         />
       </div>
