@@ -37,7 +37,60 @@ export async function createSession(sessionId, fieldCount, allPlayers) {
     allPlayers: arrayUnion(...allPlayers)
   }, { merge: true })
 
+  // Save session ID to global list so we can fetch all sessions later
+  const globalSessionsRef = doc(db, 'global', 'sessions')
+  await setDoc(globalSessionsRef, {
+    allSessions: arrayUnion(sessionId)
+  }, { merge: true })
+
   return sessionData
+}
+
+/**
+ * Fetch all historical sessions to display in History grid.
+ */
+export async function getSessionsFromFirestore() {
+  const globalSessionsRef = doc(db, 'global', 'sessions')
+  const snap = await getDoc(globalSessionsRef)
+  
+  if (!snap.exists() || !snap.data().allSessions) {
+    return []
+  }
+  
+  const allSessionIds = snap.data().allSessions
+  const sessions = []
+  
+  for (const sessionId of allSessionIds) {
+    const sessionRef = doc(db, sessionId, 'data')
+    const sessionSnap = await getDoc(sessionRef)
+    
+    if (sessionSnap.exists()) {
+      const data = sessionSnap.data()
+      // calculate top 5 players
+      let topPlayers = []
+      if (data.playerStats) {
+        topPlayers = Object.entries(data.playerStats)
+          .sort((a, b) => {
+            if (b[1].total_wins !== a[1].total_wins) {
+              return b[1].total_wins - a[1].total_wins
+            }
+            return b[1].total_matches - a[1].total_matches
+          })
+          .slice(0, 5)
+          .map((entry, index) => `${index === 0 && entry[1].total_wins > 0 ? '🏆 ' : ''}${entry[0]}`)
+      }
+      
+      const dateStr = sessionId.replace('Session-', '').replace(/-/g, ' ')
+      
+      sessions.push({
+        date: dateStr,
+        dateId: sessionId,
+        topPlayers: topPlayers.length > 0 ? topPlayers : ['(Belum ada data)']
+      })
+    }
+  }
+  
+  return sessions.reverse() // latest first
 }
 
 /**

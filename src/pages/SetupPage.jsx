@@ -345,47 +345,6 @@ export default function SetupPage() {
             </>
           )}
         </motion.button>
-
-        {/* ── Global Match History (All-Time Stats) ── */}
-        {globalStats.filter(stat => stat.total_matches > 0).length > 0 && (
-          <GlassCard>
-            <h2 className="text-lg font-semibold text-white/80 mb-4 flex items-center gap-2">
-              <Trophy size={20} className="text-accent-orange" />
-              Statistik Global (Semua Waktu)
-            </h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-white/70">
-                <thead className="bg-white/10 text-white/50 border-b border-white/10 uppercase text-xs">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold rounded-tl-lg">Pemain</th>
-                    <th className="px-4 py-3 font-semibold text-center">Pertandingan</th>
-                    <th className="px-4 py-3 font-semibold text-center">Win Rate</th>
-                    <th className="px-4 py-3 font-semibold text-right rounded-tr-lg">Terakhir Main</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {globalStats
-                    .filter(stat => stat.total_matches > 0)
-                    .map((stat, idx) => {
-                    const wr = ((stat.total_wins / stat.total_matches) * 100).toFixed(0);
-                    return (
-                      <tr key={idx} className="hover:bg-white/5 transition-colors">
-                        <td className="px-4 py-3 font-medium text-white/90">{stat.name}</td>
-                        <td className="px-4 py-3 text-center">{stat.total_matches}</td>
-                        <td className="px-4 py-3 text-center">
-                          <span className={`px-2 py-1 rounded text-xs font-bold ${wr >= 50 ? 'text-emerald-400 bg-emerald-400/10' : 'text-white/40 bg-white/5'}`}>
-                            {wr}%
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-right text-white/40 text-xs">{stat.last_played_date || '-'}</td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </GlassCard>
-        )}
       </div>
     </motion.div>
   )

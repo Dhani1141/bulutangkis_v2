@@ -1,34 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FolderFloat from '../components/FolderFloat';
-import { getGlobalPlayerStats } from '../lib/firebaseHelpers'; 
-
-// Let's pretend each date in our stats is a "Session".
-// We will mock this if globalPlayerStats isn't rich enough for history yet.
+import { getSessionsFromFirestore } from '../lib/firebaseHelpers'; 
 
 const WeeklySessionsPage = () => {
   const navigate = useNavigate();
   const [sessions, setSessions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Example Mock/Fetch. Grouping your matches by their played date:
     const fetchSessionHistory = async () => {
-      // In a real app, you'd fetch all session docs.
-      // For now, let's create a mock array since we don't have getSessionsFromFirestore yet.
-      // We will read the single current session from localStorage as an example,
-      // and add some fake ones to show the grid.
-      
-      const currentId = localStorage.getItem('currentSessionId') || "Session-06-10-2026";
-      const dateStr = currentId.replace('Session-', '').replace(/-/g, ' ');
-      
-      const mockData = [
-        { date: dateStr, dateId: currentId, topPlayers: ['🏆 dhani', 'bagas', 'akmal', 'fajar', 'caca'] },
-        { date: "05 10 2026", dateId: "Session-05-10-2026", topPlayers: ['🏆 riski', 'dhani', 'bagas', 'zaki', 'siti'] },
-        { date: "04 10 2026", dateId: "Session-04-10-2026", topPlayers: ['🏆 bagas', 'akmal', 'caca', 'fajar', 'riski'] },
-        { date: "03 10 2026", dateId: "Session-03-10-2026", topPlayers: ['🏆 caca', 'siti', 'dhani', 'akmal', 'zaki'] }
-      ];
-      
-      setSessions(mockData);
+      try {
+        const sessionData = await getSessionsFromFirestore(); 
+        setSessions(sessionData);
+      } catch (error) {
+        console.error("Error fetching sessions", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchSessionHistory();
   }, []);
@@ -40,8 +29,19 @@ const WeeklySessionsPage = () => {
         <p className="text-white/50 text-sm md:text-base">Pilih sesi tanggal untuk melihat data & top 5 pemain</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 w-full max-w-3xl mx-auto">
-        {sessions.map((session, index) => (
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-20 text-white/50">
+          <div className="w-8 h-8 border-2 border-indigo-400/30 border-t-indigo-400 rounded-full animate-spin mb-4" />
+          <p>Memuat sesi...</p>
+        </div>
+      ) : sessions.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-white/50 bg-white/[0.02] border border-white/5 rounded-2xl w-full max-w-2xl text-center p-8">
+          <p className="text-lg font-medium text-white/80 mb-2">Belum ada sesi yang dimainkan 🏸</p>
+          <p className="text-sm">Bikin pertandingan baru di Dashboard buat nambahin riwayat di sini.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 w-full max-w-3xl mx-auto">
+          {sessions.map((session, index) => (
           <div 
             key={session.dateId} 
             className="flex items-center justify-center bg-white/[0.02] border border-white/5 hover:border-indigo-500/30 rounded-2xl p-6 backdrop-blur-md transition-all duration-300 relative group"
@@ -80,7 +80,8 @@ const WeeklySessionsPage = () => {
             />
           </div>
         ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
