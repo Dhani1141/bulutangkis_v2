@@ -105,15 +105,13 @@
   /* ── Animated textured backdrop (refracted by the glass) ── */
   .liquid-bg {
     position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    height: calc(100% + 400px);
+    inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: url('/bg-flowers.jpg') center top / 400px repeat;
-    animation: moveBackground 30s linear infinite;
-    will-change: transform;
+    background: url('/bg-light.jpg') center center / cover no-repeat;
+  }
+  html.dark .liquid-bg {
+    background: url('/bg-dark.jpg') center center / cover no-repeat;
   }
   .liquid-bg::after {
     content: '';
@@ -275,14 +273,7 @@
   }
 }
 
-@keyframes moveBackground {
-  from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(0, -400px, 0); }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .liquid-bg { animation: none; }
-}
 
 /* ── Number input spinner removal ── */
 input[type='number']::-webkit-outer-spin-button,
