@@ -113,6 +113,9 @@ Instruksi:
       if (err.message.includes('503')) {
          return 'Komentator sedang sibuk (Server Google penuh/503). Silakan coba lagi nanti.';
       }
+      if (err.message.includes('429')) {
+         return 'Waduh, komentatornya lagi ngopi bentar (Limit API habis/429). Tunggu beberapa saat lalu refresh ya!';
+      }
       return `Komentator AI gagal dimuat: ${err.message.split('{')[0].trim()}`
     }
   }
