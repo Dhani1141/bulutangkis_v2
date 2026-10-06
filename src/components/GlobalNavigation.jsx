@@ -7,7 +7,7 @@ export default function GlobalNavigation() {
   const location = useLocation();
 
   return (
-    <div className="fixed top-6 left-6 z-50 hidden md:block">
+    <div className="fixed top-4 left-4 md:top-6 md:left-6 z-50">
       <BranchedMenu
         items={[
           {

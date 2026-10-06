@@ -13,13 +13,6 @@ export default function History() {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center gap-4 mb-2"
       >
-        <button
-          onClick={() => navigate(-1)}
-          className="glass-button text-white/80 hover:text-white"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Kembali</span>
-        </button>
         <h1 className="text-3xl font-bold text-white flex items-center gap-3">
           <Trophy className="w-8 h-8 text-yellow-400" />
           History Kemenangan
