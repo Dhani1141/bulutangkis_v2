@@ -76,6 +76,7 @@ export default function BranchedMenu({
 
   const select = (value, item) => {
     setActive(value);
+    setOpen(new Set()); // Auto-close menu on selection
     latest.current.onSelect?.(value, item);
   };
   const toggle = i => {

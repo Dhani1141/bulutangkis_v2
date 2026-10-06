@@ -18,9 +18,11 @@ export default function GlobalNavigation() {
             ]
           }
         ]}
-        defaultOpen={[0]}
+        defaultOpen={[]}
         defaultActive={location.pathname}
-        onSelect={(value) => navigate(value)}
+        onSelect={(value) => {
+          setTimeout(() => navigate(value), 450);
+        }}
         color="#e4e4e7"
         accentColor="#4f46e5"
         lineColor="rgba(255, 255, 255, 0.2)"
