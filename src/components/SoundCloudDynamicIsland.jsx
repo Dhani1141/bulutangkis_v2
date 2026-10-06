@@ -151,11 +151,44 @@ const SoundCloudDynamicIsland = () => {
             >
               <div className="flex items-center justify-between w-full">{/* Cover Art / Waveform animation */}
               <div className="flex items-center gap-2 max-w-[150px]">
-                <img 
-                  src={currentTrack.artwork_url} 
-                  alt="Track cover" 
-                  className={`w-8 h-8 rounded-full border border-white/20 object-cover ${isPlaying ? 'animate-spin [animation-duration:8s]' : ''}`}
-                />
+                <div className={`relative w-8 h-8 rounded-full border border-white/20 overflow-hidden flex items-center justify-center shrink-0 ${isPlaying ? 'animate-spin [animation-duration:8s]' : ''}`}>
+                    <ReactPlayer 
+                      url={currentTrack.stream_url} 
+                      playing={isPlaying} 
+                      controls={false}
+                      width="150px"
+                      height="150px"
+                      style={{ pointerEvents: 'none', position: 'absolute' }}
+                      onProgress={handleProgress}
+                      onDuration={handleDuration}
+                      onEnded={() => {
+                        console.log("YouTube Player Ended naturally");
+                        handleEnded();
+                      }}
+                      onError={(error) => {
+                        console.error("YOUTUBE ERROR CODE:", error);
+                        setIsPlaying(false);
+                        if (error === 150 || error === 101) {
+                           alert("WADUH! Lagu ini sengaja DIBLOKIR sama pemilik hak ciptanya buat diputar di luar web YouTube (Embed Restricted).\n\nSolusi: Coba ketik judul lagunya ditambah kata 'LIRIK' atau 'COVER' pas nyari, biasanya aman bre!");
+                        }
+                      }}
+                      config={{
+                        youtube: {
+                          playerVars: { 
+                            origin: typeof window !== 'undefined' ? window.location.origin : '',
+                            playsinline: 1
+                          }
+                        }
+                      }}
+                    />
+                    {!isPlaying && (
+                      <img 
+                        src={currentTrack.artwork_url} 
+                        alt="Track cover" 
+                        className="w-full h-full object-cover absolute inset-0 z-10"
+                      />
+                    )}
+                  </div>
                 <div className="flex flex-col truncate">
                   <span className="text-xs font-semibold truncate">{currentTrack.title}</span>
                   <div className="flex items-center gap-1">
