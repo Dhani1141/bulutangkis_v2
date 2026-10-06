@@ -11,22 +11,64 @@ const SoundCloudDynamicIsland = () => {
   
   // Player state
   const [currentTrack, setCurrentTrack] = useState({
-    title: "dhani - Smash Anthem (SC)",
-    artist: "Dhani",
-    stream_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", 
+    title: "Badminton Warm Up (Preview)",
+    artist: "Sports Beat",
+    stream_url: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/95/9b/64/959b646c-c760-4927-4a0b-93ff5f9ec0fc/mzaf_645555418181639014.plus.aac.p.m4a", 
     id: 1,
-    artwork_url: "https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=80&q=80" // Placeholder SC logo/artwork
+    artwork_url: "https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=80&q=80"
   });
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState('0:00');
   const [duration, setDuration] = useState('0:00');
 
-  const formatTime = (time) => {
-    if (isNaN(time)) return '0:00';
-    const mins = Math.floor(time / 60);
-    const secs = Math.floor(time % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  // Fetch search results from iTunes
+  useEffect(() => {
+    if (!searchQuery) {
+      setSearchResults([]);
+      return;
+    }
+    const delayDebounceFn = setTimeout(async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(searchQuery)}&media=music&entity=song&limit=10`);
+        if (response.ok) {
+          const data = await response.json();
+          setSearchResults(data.results.map(track => ({
+            id: track.trackId,
+            title: track.trackName,
+            artist: track.artistName,
+            stream_url: track.previewUrl,
+            artwork_url: track.artworkUrl100
+          })));
+        } else {
+          setSearchResults([]);
+        }
+      } catch (err) {
+        setSearchResults([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
+
+  // Player controls
+  const togglePlay = () => setIsPlaying(!isPlaying);
+
+  const handleSelectTrack = (track) => {
+    setCurrentTrack(track);
+    setIsSearching(false);
+    setSearchQuery('');
+    setIsPlaying(true);
+  };
+
+  const formatTime = (seconds) => {
+    if (isNaN(seconds)) return '0:00';
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
   const handleProgress = (state) => {
@@ -44,257 +86,149 @@ const SoundCloudDynamicIsland = () => {
     setCurrentTime('0:00');
   };
 
-  
-  // Fetch search results from SoundCloud or fallback to popular badminton jam
-  useEffect(() => {
-    if (!searchQuery) {
-      setSearchResults([]);
-      return;
-    }
-    const delayDebounceFn = setTimeout(async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(searchQuery)}&type=video&key=AIzaSyBKgo6xvjnq_z5vdvkF3UgXE4CI6I-hpHM`);
-          if (response.ok) {
-            const data = await response.json();
-            setSearchResults(data.items.map(item => ({
-              id: item.id.videoId,
-              title: item.snippet.title,
-              artist: item.snippet.channelTitle,
-              stream_url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
-              artwork_url: item.snippet.thumbnails.default.url
-            })));
-          } else {
-          // Fallback mocks if API fails or lacks Client ID
-          setSearchResults([
-            { id: 101, title: 'Akmal - Smash Kanan', artist: 'Sesi Badminton', artwork_url: "https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=80&q=80" },
-            { id: 102, title: 'Tio - Drive No Mercy', artist: 'Soundtrack', artwork_url: "https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=80&q=80" },
-            { id: 103, title: 'Badminton BGM - Warm Up', artist: 'Sport Beats', artwork_url: "https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=80&q=80" }
-          ]);
-        }
-      } catch (err) {
-        // Safe fallback list on error
-        setSearchResults([
-          { id: 201, title: 'Badminton Sesi Malam', artist: 'Dhani & Fajar', artwork_url: "https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=80&q=80" },
-          { id: 202, title: 'BuluTangkiS Beat V1', artist: 'Soundtrack', artwork_url: "https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=80&q=80" }
-        ]);
-      } finally {
-        setIsLoading(false);
-      }
-    }, 500);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery]);
-
-  // Player controls
-  const togglePlay = () => setIsPlaying(!isPlaying);
-
-  const [isPlayerReady, setIsPlayerReady] = useState(false);
-    const handleSelectTrack = (track) => {
-      setIsPlayerReady(false);
-      setIsPlaying(false);
-      setCurrentTrack(track);
-      setIsSearching(false);
-      setSearchQuery('');
-    };
-
   return (
     <div className="relative">
-      <div style={{ position: 'absolute', width: '300px', height: '300px', opacity: 0.001, pointerEvents: 'none', zIndex: -50 }}>
-        <ReactPlayer 
-          url={currentTrack.stream_url} 
-          playing={isPlaying} 
-          controls={false}
-          width="100%"
-          height="100%"
-          onProgress={handleProgress}
-          onDuration={handleDuration}
-          onEnded={() => {
-            console.log("YouTube Player Ended naturally");
-            handleEnded();
-          }}
-          onError={(error) => {
-            console.error("YOUTUBE ERROR CODE:", error);
-            setIsPlaying(false);
-            if (error === 150 || error === 101) {
-               alert("WADUH! Lagu ini sengaja DIBLOKIR sama pemilik hak ciptanya buat diputar di luar web YouTube (Embed Restricted).\n\nSolusi: Coba ketik judul lagunya ditambah kata 'LIRIK' atau 'COVER' pas nyari, biasanya aman bre!");
-            } else {
-               alert("Error dari YouTube: " + error + "\nCoba lagu lain bre!");
-            }
-          }}
-          config={{
-            youtube: {
-              playerVars: { 
-                origin: typeof window !== 'undefined' ? window.location.origin : '',
-                playsinline: 1,
-                autoplay: 1
-              }
-            }
-          }}
-        />
-      </div>
-      <motion.div
-        className="absolute top-0 right-0 z-50 overflow-hidden bg-zinc-950/90 border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-md rounded-[28px] focus-within:border-indigo-500/50"
-        animate={{
-          width: isSearching ? 320 : 310,
-          height: isSearching ? 380 : 64,
+      {/* Hidden ReactPlayer for iTunes Audio */}
+      <ReactPlayer 
+        url={currentTrack.stream_url} 
+        playing={isPlaying} 
+        controls={false}
+        width="0"
+        height="0"
+        style={{ display: 'none' }}
+        onProgress={handleProgress}
+        onDuration={handleDuration}
+        onEnded={handleEnded}
+        onError={(e) => {
+          console.error("Player Error:", e);
+          setIsPlaying(false);
         }}
-        transition={{ type: "spring", stiffness: 350, damping: 25 }}
-      >
-        <AnimatePresence mode="wait">
-          {!isSearching ? (
-            /* ================= STATE 1: PLAYER MODE (PIL MUNGIL) ================= */
-            <motion.div
-              key="player"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="flex flex-col justify-center h-full px-4 text-white relative"
-            >
-              <div className="flex items-center justify-between w-full">{/* Cover Art / Waveform animation */}
-              <div className="flex items-center gap-2 max-w-[150px]">
-                <div className={`relative w-8 h-8 rounded-full border border-white/20 overflow-hidden flex items-center justify-center shrink-0 ${isPlaying ? 'animate-spin [animation-duration:8s]' : ''}`}>
-                    <ReactPlayer 
-                      url={currentTrack.stream_url} 
-                      playing={isPlaying} 
-                      controls={false}
-                      width="150px"
-                      height="150px"
-                      style={{ pointerEvents: 'none', position: 'absolute' }}
-                      onProgress={handleProgress}
-                      onDuration={handleDuration}
-                      onEnded={() => {
-                        console.log("YouTube Player Ended naturally");
-                        handleEnded();
-                      }}
-                      onError={(error) => {
-                        console.error("YOUTUBE ERROR CODE:", error);
-                        setIsPlaying(false);
-                        if (error === 150 || error === 101) {
-                           alert("WADUH! Lagu ini sengaja DIBLOKIR sama pemilik hak ciptanya buat diputar di luar web YouTube (Embed Restricted).\n\nSolusi: Coba ketik judul lagunya ditambah kata 'LIRIK' atau 'COVER' pas nyari, biasanya aman bre!");
-                        }
-                      }}
-                      config={{
-                        youtube: {
-                          playerVars: { 
-                            origin: typeof window !== 'undefined' ? window.location.origin : '',
-                            playsinline: 1
-                          }
-                        }
-                      }}
-                    />
-                    {!isPlaying && (
-                      <img 
-                        src={currentTrack.artwork_url} 
-                        alt="Track cover" 
-                        className="w-full h-full object-cover absolute inset-0 z-10"
-                      />
-                    )}
-                  </div>
+      />
+
+      <AnimatePresence mode="wait">
+        {!isSearching ? (
+          /* STATE 1: PLAYER MODE (Pil Mungil) */
+          <motion.div
+            key="player"
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="flex flex-col gap-2 bg-zinc-900/60 backdrop-blur-md border border-white/10 rounded-full px-4 py-2 shadow-2xl w-[320px] mx-auto overflow-hidden"
+          >
+            <div className="flex items-center justify-between w-full">
+              {/* Cover Art & Title */}
+              <div className="flex items-center gap-3 max-w-[150px]">
+                <img 
+                  src={currentTrack.artwork_url} 
+                  alt="Track cover" 
+                  className={`w-10 h-10 rounded-full border border-white/20 object-cover shadow-sm ${isPlaying ? 'animate-spin [animation-duration:8s]' : ''}`}
+                />
                 <div className="flex flex-col truncate">
-                  <span className="text-xs font-semibold truncate">{currentTrack.title}</span>
-                  <div className="flex items-center gap-1">
-                    {isPlaying && (
-                      <div className="flex items-center gap-[2px] h-[8px] mt-0.5">
-                        <span className="w-[2px] h-full bg-emerald-400 animate-[bounce_0.8s_infinite] [animation-delay:0.1s]" />
-                        <span className="w-[2px] h-2/3 bg-emerald-400 animate-[bounce_0.8s_infinite] [animation-delay:0.3s]" />
-                        <span className="w-[2px] h-full bg-emerald-400 animate-[bounce_0.8s_infinite] [animation-delay:0.5s]" />
-                      </div>
-                    )}
-                    <span className="text-[10px] text-zinc-400 truncate">YouTube</span>
+                  <span className="text-sm font-bold text-white truncate">{currentTrack.title}</span>
+                  <div className="flex items-center gap-1.5 text-[10px] font-medium text-emerald-400">
+                    <Music size={10} />
+                    <span className="truncate">{currentTrack.artist}</span>
                   </div>
                 </div>
               </div>
 
               {/* Controls */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <button className="text-zinc-400 hover:text-white transition active:scale-90"><SkipBack size={16} /></button>
-                <button onClick={togglePlay} className="p-1.5 bg-white text-zinc-950 rounded-full hover:scale-105 transition active:scale-95">
-                  {isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" />}
+                <button onClick={togglePlay} className="p-2 bg-white text-zinc-950 rounded-full shadow-md hover:scale-105 transition active:scale-95">
+                  {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" />}
                 </button>
                 <button className="text-zinc-400 hover:text-white transition active:scale-90"><SkipForward size={16} /></button>
                 
                 {/* Switch to Search */}
                 <button 
-                  onClick={() => setIsSearching(true)} 
-                  className="p-1.5 hover:bg-white/10 rounded-full text-zinc-400 hover:text-indigo-400 transition ml-1"
+                  onClick={() => setIsSearching(true)}
+                  className="ml-1 p-1.5 text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition active:scale-90"
                 >
                   <Search size={16} />
                 </button>
               </div>
             </div>
-            {/* Progress Bar */}
-            <div className="flex items-center gap-2 w-full mt-1.5 px-0.5">
-              <span className="text-[9px] text-zinc-400 font-medium w-6 text-right">{currentTime}</span>
-              <div className="flex-1 h-1 bg-white/20 rounded-full overflow-hidden">
-                <div className="h-full bg-white rounded-full transition-all duration-300 ease-linear" style={{ width: `${progress}%` }} />
+
+            {/* Time & Progress Bar */}
+            <div className="flex items-center gap-2 px-1 pb-1">
+              <span className="text-[9px] font-medium text-zinc-400 w-6 text-right">{currentTime}</span>
+              <div className="flex-1 h-1 bg-zinc-800 rounded-full overflow-hidden relative">
+                <div 
+                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-500 to-cyan-400 transition-all duration-300 ease-linear"
+                  style={{ width: `${progress}%` }}
+                />
               </div>
-              <span className="text-[9px] text-zinc-400 font-medium w-6">{duration}</span>
+              <span className="text-[9px] font-medium text-zinc-400 w-6">{duration}</span>
             </div>
           </motion.div>
-          ) : (
-            /* ================= STATE 2: SEARCH MODE (EXPAANDED PANEL) ================= */
-            <motion.div
-              key="search"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              className="p-4 h-full flex flex-col text-white"
-            >
-              {/* Search Bar header */}
-              <div className="flex items-center gap-2 mb-3">
-                <button 
-                  onClick={() => { setIsSearching(false); setSearchQuery(''); }}
-                  className="p-1 hover:bg-white/10 rounded-full text-zinc-400 hover:text-white transition"
-                >
-                  <ArrowLeft size={16} />
-                </button>
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Cari lagu di YouTube..."
-                    className="w-full bg-white/5 border border-white/10 rounded-full pl-8 pr-3 py-1 text-xs text-white focus:outline-none focus:border-indigo-500 transition"
-                    autoFocus
-                  />
-                  <Search size={12} className="absolute left-3 top-2 text-zinc-500" />
-                </div>
+        ) : (
+          /* STATE 2: SEARCH MODE (Mekar Kebawah) */
+          <motion.div
+            key="search"
+            initial={{ opacity: 0, height: 40, borderRadius: 9999 }}
+            animate={{ opacity: 1, height: 'auto', borderRadius: 24 }}
+            exit={{ opacity: 0, height: 40, borderRadius: 9999 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="flex flex-col bg-zinc-900/80 backdrop-blur-xl border border-white/10 shadow-2xl w-[320px] mx-auto overflow-hidden"
+          >
+            {/* Search Input Area */}
+            <div className="flex items-center gap-3 p-3 border-b border-white/5">
+              <button 
+                onClick={() => setIsSearching(false)}
+                className="p-1.5 text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition active:scale-90"
+              >
+                <ArrowLeft size={16} />
+              </button>
+              <div className="flex-1 flex items-center gap-2 bg-black/40 rounded-full px-3 py-1.5 border border-white/5 focus-within:border-emerald-500/50 transition-colors">
+                <Search size={14} className="text-zinc-400" />
+                <input 
+                  type="text"
+                  autoFocus
+                  placeholder="Cari lagu di iTunes..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-transparent text-sm text-white placeholder-zinc-500 focus:outline-none w-full"
+                />
               </div>
+            </div>
 
-              {/* Scrolling Results */}
-              <div className="flex-1 overflow-y-auto space-y-1.5 pr-0.5 custom-scrollbar">
-                {isLoading ? (
-                  <div className="flex flex-col items-center justify-center h-28 text-zinc-500 text-xs gap-2">
-                    <span className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
-                    <span>Mencari di YouTube...</span>
-                  </div>
-                ) : searchResults.length > 0 ? (
-                  searchResults.map((track) => (
-                    <motion.button
-                      key={track.id}
-                      onClick={() => handleSelectTrack(track)}
-                      whileHover={{ scale: 1.01, backgroundColor: "rgba(255,255,255,0.08)" }}
-                      className="w-full flex items-center gap-2.5 p-2 rounded-xl text-left bg-white/[0.02] border border-white/5 transition"
-                    >
-                      <img src={track.artwork_url} className="w-7 h-7 rounded-lg object-cover" alt="Art" />
-                      <div className="flex-1 truncate">
-                        <div className="text-xs font-medium truncate">{track.title}</div>
-                        <div className="text-[10px] text-zinc-400 truncate">{track.artist}</div>
-                      </div>
-                    </motion.button>
-                  ))
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-48 text-zinc-500 text-center text-xs">
-                    <Music size={24} className="mb-1 text-zinc-600" />
-                    <span>Ketik lagu kesukaanmu untuk memulai jamming Badminton!</span>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+            {/* Results List */}
+            <div className="max-h-[300px] overflow-y-auto p-2 flex flex-col gap-1 custom-scrollbar">
+              {isLoading ? (
+                <div className="flex items-center justify-center p-4 text-sm text-zinc-400 gap-2">
+                  <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+                  Mencari...
+                </div>
+              ) : searchResults.length > 0 ? (
+                searchResults.map(track => (
+                  <motion.button
+                    key={track.id}
+                    onClick={() => handleSelectTrack(track)}
+                    whileHover={{ scale: 1.01, backgroundColor: "rgba(255,255,255,0.08)" }}
+                    className="w-full flex items-center gap-3 p-2 rounded-xl text-left bg-white/[0.02] border border-white/5 transition"
+                  >
+                    <img src={track.artwork_url} className="w-10 h-10 rounded-lg object-cover shadow-sm" alt="Art" />
+                    <div className="flex-1 truncate">
+                      <div className="text-sm font-bold text-white truncate">{track.title}</div>
+                      <div className="text-[11px] font-medium text-emerald-400 truncate">{track.artist}</div>
+                    </div>
+                  </motion.button>
+                ))
+              ) : searchQuery ? (
+                <div className="p-4 text-center text-sm text-zinc-500">
+                  Lagu tidak ditemukan.
+                </div>
+              ) : (
+                <div className="p-4 text-center text-sm text-zinc-500">
+                  Ketik judul lagu atau artis...
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
