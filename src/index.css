@@ -16,7 +16,7 @@
     --lg-btn-blur: 1px;
     --lg-drop-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
     --lg-text-shadow: none;
-    --lg-bg-overlay: rgba(255, 255, 255, 0.45);
+    --lg-bg-overlay: rgba(0, 0, 0, 0.08); /* Dim the light background slightly */
   }
 
   html.dark {
