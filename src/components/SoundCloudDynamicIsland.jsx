@@ -98,11 +98,14 @@ const SoundCloudDynamicIsland = () => {
 
   return (
     <div className="relative">
-      <div style={{ position: 'absolute', width: '50px', height: '50px', overflow: 'hidden', opacity: 0.01, pointerEvents: 'none', top: '0px', left: '0px', zIndex: -10 }}>
+      <div style={{ position: 'absolute', width: '200px', height: '200px', opacity: 0.01, pointerEvents: 'none', top: 0, left: 0, zIndex: -10 }}>
         <ReactPlayer 
           url={currentTrack.stream_url} 
           playing={isPlaying} 
           controls={false}
+          volume={1}
+          muted={false}
+          progressInterval={1000}
           width="100%"
           height="100%"
           onProgress={handleProgress}
@@ -121,8 +124,7 @@ const SoundCloudDynamicIsland = () => {
             youtube: {
               playerVars: { 
                 origin: typeof window !== 'undefined' ? window.location.origin : '',
-                playsinline: 1,
-                autoplay: 1
+                playsinline: 1
               }
             }
           }}
