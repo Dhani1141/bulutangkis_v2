@@ -98,27 +98,32 @@ const SoundCloudDynamicIsland = () => {
 
   return (
     <div className="relative">
-      <ReactPlayer 
-        url={currentTrack.stream_url} 
-        playing={isPlaying} 
-        controls={false}
-        width="1px"
-        height="1px"
-        style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
-        onProgress={handleProgress}
-        onDuration={handleDuration}
-        onEnded={handleEnded}
-        onError={(error) => {
-          console.error("YouTube Player Error:", error);
-          setIsPlaying(false);
-          alert("Waduh! Lagu ini dikunci hak cipta sama YouTube (Embed Blocked). Coba cari versi 'Lirik' atau 'Cover'-nya ya bre!");
-        }}
-        config={{
-          youtube: {
-            playerVars: { origin: window.location.origin }
-          }
-        }}
-      />
+      <div style={{ position: 'absolute', width: '200px', height: '200px', overflow: 'hidden', opacity: 0, pointerEvents: 'none', top: '-1000px', left: '-1000px', zIndex: -1 }}>
+        <ReactPlayer 
+          url={currentTrack.stream_url} 
+          playing={isPlaying} 
+          controls={false}
+          width="100%"
+          height="100%"
+          onProgress={handleProgress}
+          onDuration={handleDuration}
+          onEnded={handleEnded}
+          onError={(error) => {
+            console.error("YouTube Player Error:", error);
+            setIsPlaying(false);
+            alert("Waduh! Lagu ini dikunci hak cipta sama YouTube (Embed Blocked). Coba cari versi 'Lirik' atau 'Cover'-nya ya bre!");
+          }}
+          config={{
+            youtube: {
+              playerVars: { 
+                origin: typeof window !== 'undefined' ? window.location.origin : '',
+                playsinline: 1,
+                autoplay: 1
+              }
+            }
+          }}
+        />
+      </div>
       <motion.div
         className="absolute top-0 right-0 z-50 overflow-hidden bg-zinc-950/90 border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-md rounded-[28px] focus-within:border-indigo-500/50"
         animate={{
