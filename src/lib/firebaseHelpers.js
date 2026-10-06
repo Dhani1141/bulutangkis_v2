@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, updateDoc, increment, deleteDoc, collection, getDocs, arrayUnion, writeBatch } from 'firebase/firestore'
+import { doc, setDoc, getDoc, updateDoc, increment, deleteDoc, collection, getDocs, arrayUnion, arrayRemove, writeBatch } from 'firebase/firestore'
 import { db } from '../firebase'
 
 /**
@@ -68,19 +68,17 @@ export async function getSessionsFromFirestore() {
       const data = sessionSnap.data()
       // calculate top 5 players
       let topPlayers = []
-      if (data.playerStats) {
-        topPlayers = Object.entries(data.playerStats)
-          .sort((a, b) => {
-            if (b[1].total_wins !== a[1].total_wins) {
-              return b[1].total_wins - a[1].total_wins
-            }
-            return b[1].total_matches - a[1].total_matches
-          })
-          .slice(0, 5)
-          .map((entry, index) => `${index === 0 && entry[1].total_wins > 0 ? '🏆 ' : ''}${entry[0]}`)
-      }
-      
-      const dateStr = sessionId.replace('Session-', '').replace(/-/g, ' ')
+        if (data.playerStats) {
+          topPlayers = Object.entries(data.playerStats).sort((a, b) => {
+            const winRateA = a[1].total_matches > 0 ? (a[1].total_wins / a[1].total_matches) * 100 : 0;
+            const winRateB = b[1].total_matches > 0 ? (b[1].total_wins / b[1].total_matches) * 100 : 0;
+            if (winRateB !== winRateA) return winRateB - winRateA;
+            if (b[1].total_wins !== a[1].total_wins) return b[1].total_wins - a[1].total_wins;
+            return b[1].total_matches - a[1].total_matches;
+          }).slice(0, 5).map((entry, index) => `${index === 0 && entry[1].total_wins > 0 ? '🏆 ' : ''}${entry[0]}`)
+        }
+        
+        const dateStr = sessionId.replace('Session-', '').replace(/-/g, ' ')
       
       sessions.push({
         date: dateStr,
@@ -222,4 +220,13 @@ export async function deleteSession(sessionId) {
   })
   
   await Promise.all(promises)
+}
+
+export async function deleteSingleSession(sessionId) {
+  const sessionRef = doc(db, sessionId, 'data');
+  await deleteDoc(sessionRef);
+  const globalSessionsRef = doc(db, 'global', 'sessions');
+  await updateDoc(globalSessionsRef, {
+    allSessions: arrayRemove(sessionId)
+  });
 }

@@ -162,27 +162,6 @@ export default function SetupPage() {
           </p>
         </motion.div>
 
-        {/* ── Reset Session Data (Testing) ── */}
-        <motion.div 
-          className="mb-8 flex justify-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <button
-            onClick={handleResetSession}
-            disabled={isResetting || !sessionId}
-            className="liquid-pill flex items-center gap-2 px-5 py-2.5 rounded-full text-red-400 hover:text-red-300 transition-all text-sm font-semibold disabled:opacity-50"
-          >
-            {isResetting ? (
-              <div className="w-4 h-4 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin" />
-            ) : (
-              <Trash2 size={16} />
-            )}
-            Reset Data
-          </button>
-        </motion.div>
-
         {/* ── Session ID ── */}
         <GlassCard className="mb-5">
           <div className="flex items-center gap-3 mb-1">

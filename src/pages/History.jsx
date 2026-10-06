@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FolderFloat from '../components/FolderFloat';
-import { getSessionsFromFirestore } from '../lib/firebaseHelpers'; 
+import { getSessionsFromFirestore, deleteSingleSession } from '../lib/firebaseHelpers';
+import { Trash2 } from 'lucide-react'; 
 
 const WeeklySessionsPage = () => {
   const navigate = useNavigate();
@@ -46,6 +47,22 @@ const WeeklySessionsPage = () => {
             key={session.dateId} 
             className="flex items-center justify-center bg-white/[0.02] border border-white/5 hover:border-indigo-500/30 rounded-2xl p-6 backdrop-blur-md transition-all duration-300 relative group"
           >
+            <button
+              onClick={async (e) => {
+                e.stopPropagation();
+                if (window.confirm('Yakin mau hapus sesi tanggal ' + session.date + '?')) {
+                  setIsLoading(true);
+                  await deleteSingleSession(session.dateId);
+                  const sessionData = await getSessionsFromFirestore();
+                  setSessions(sessionData);
+                  setIsLoading(false);
+                }
+              }}
+              className="absolute top-4 right-4 p-2 bg-red-500/10 hover:bg-red-500/30 text-red-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              title="Hapus Sesi"
+            >
+              <Trash2 size={18} />
+            </button>
             <FolderFloat
               items={session.topPlayers} // Array of top 5 players for this specific date
               label={`Sesi ${session.date}`} // e.g., "Sesi 06 Okt 2026"
