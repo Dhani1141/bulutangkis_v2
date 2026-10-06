@@ -5,6 +5,7 @@ import LeaderboardPage from './pages/LeaderboardPage'
 import History from './pages/History'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import ThemeToggle from './components/ThemeToggle'
+import SoundCloudDynamicIsland from './components/SoundCloudDynamicIsland'
 import GlassFilters from './components/GlassFilters'
 import GlobalNavigation from './components/GlobalNavigation'
 
@@ -29,7 +30,8 @@ export default function App() {
     <BrowserRouter>
       <div className="min-h-screen relative overflow-hidden">
         <GlobalNavigation />
-        <div className="absolute top-4 right-4 z-50">
+        <div className="absolute top-4 right-4 z-50 flex items-start gap-4">
+          <SoundCloudDynamicIsland />
           <ThemeToggle />
         </div>
 
