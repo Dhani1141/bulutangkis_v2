@@ -4,14 +4,14 @@ import ReactPlayer from 'react-player';
 import { Play, Pause, Search, ArrowLeft, Music, SkipForward, SkipBack } from 'lucide-react'; // Adjust import based on your icon library
 
 const SC_PLAYLIST = [
-  { id: 1, title: 'Acido Funk (Slowed)', artist: 'Jahson Medina', stream_url: 'https://soundcloud.com/jahson-medina/acido-funk-slowed', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
-  { id: 2, title: 'Swaggin at the Partment (Slowed)', artist: 'Ghostfaceplaya', stream_url: 'https://soundcloud.com/ghostfaceplaya/swaggin-at-the-partment-slowed', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
-  { id: 3, title: 'Enough Slay (Mega Phonk Mashup)', artist: 'Jerberlazaro', stream_url: 'https://soundcloud.com/jerberlazaromusic/eternxlkz-enough-slay-tiktok-mega-phonk-mashup', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
-  { id: 4, title: 'Avangard (Slowed)', artist: 'Lonown', stream_url: 'https://soundcloud.com/lonown6/avangard-slowed', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
-  { id: 5, title: 'Andromeda & KVRXD - No Fear', artist: 'Tribal Trap', stream_url: 'https://soundcloud.com/tribaltrapmusic/andromeda-kvrxd-no-fear', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
-  { id: 6, title: 'Mortals (Funk Remix)', artist: 'LXNGVX & Warriyo', stream_url: 'https://soundcloud.com/nocopyrightsounds/lxngvx-warriyo-mortals-funk-remix-ncs-release', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
-  { id: 7, title: 'Montagem Game (Super Slowed)', artist: 'Thibaud21', stream_url: 'https://soundcloud.com/thibaud21lol/montagem-game-super-slowed-par', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
-  { id: 8, title: 'Montagem Tenta', artist: 'RandomFunkBR', stream_url: 'https://soundcloud.com/randomfunkbr9/montagem-tenta-1', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' }
+  { id: 1, title: 'FUNK DO BOUNCE (Slowed)', artist: 'Ariis', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/78/bb/09/78bb0943-54db-5906-270e-f51b7f4211f3/mzaf_11235458155300568117.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
+  { id: 2, title: 'Brazilian Phonk Automotivo', artist: 'PHONK & Montagem', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/83/0b/fe/830bfe11-4ea8-da4d-32b5-fe72854cc868/mzaf_5769007449919144696.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
+  { id: 3, title: 'Dark Pulse (Phonk)', artist: 'OCD F42', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e3/06/21/e30621b9-0a06-4927-8779-f58a14839ec9/mzaf_5957398691056077498.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
+  { id: 4, title: 'Dark Pulse (Slowed)', artist: 'Phonk Montagem', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e8/a7/74/e8a774f4-8a99-655c-236d-c66321353374/mzaf_13899044644026412254.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
+  { id: 5, title: 'Dark Pulse (Slowed Reverb)', artist: 'PHONK', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b9/e8/88/b9e8884a-31d9-5fa6-4780-9e3e3336582e/mzaf_11372573903284384660.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
+  { id: 6, title: 'Dark Engine (Sped Up)', artist: 'OCD F42', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/96/95/17/96951770-45f8-b723-5579-132d362f5068/mzaf_443424279666277532.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
+  { id: 7, title: 'Dark Engine (Slowed)', artist: 'Phonk Montagem', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/80/d3/52/80d35249-f316-7753-1794-145c83b924bd/mzaf_11231361559234470985.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
+  { id: 8, title: 'Montagem Game (Nightcore)', artist: 'PHONK', stream_url: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/07/85/94/07859483-9b93-6951-5f33-5bdd701444b3/mzaf_15934730209694146481.plus.aac.p.m4a', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' }
 ];
 
 const SoundCloudDynamicIsland = () => {
@@ -81,13 +81,7 @@ const SoundCloudDynamicIsland = () => {
             console.error("Audio Player Error:", e);
             setIsPlaying(false);
           }}
-          config={{
-            soundcloud: {
-              options: {
-                auto_play: true
-              }
-            }
-          }}
+          
         />
       </div>
 
