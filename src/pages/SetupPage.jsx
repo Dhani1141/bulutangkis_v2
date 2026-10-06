@@ -141,12 +141,12 @@ export default function SetupPage() {
 
   return (
     <motion.div
-      className="relative z-10 min-h-screen flex items-center justify-center p-4 md:p-6"
+      className="relative z-10 min-h-screen flex items-center justify-center pt-32 p-4 md:pt-6 md:p-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className="w-full max-w-2xl pt-8 pb-12">
+      <div className="w-full max-w-2xl pb-12">
         {/* ── Header ── */}
         <motion.div
           className="text-center mb-8"

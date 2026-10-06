@@ -155,7 +155,7 @@ export default function MatchPage() {
 
   return (
     <motion.div
-      className="relative z-10 min-h-screen p-4 md:p-6"
+      className="relative z-10 min-h-screen pt-32 p-4 md:pt-6 md:p-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
