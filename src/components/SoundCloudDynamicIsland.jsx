@@ -18,6 +18,37 @@ const SoundCloudDynamicIsland = () => {
   });
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(new Audio()); // Playback engine
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState('0:00');
+  const [duration, setDuration] = useState('0:30');
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    const updateProgress = () => {
+      const current = audio.currentTime;
+      const total = audio.duration || 30;
+      setProgress((current / total) * 100);
+      const formatTime = (time) => {
+        if (isNaN(time)) return '0:00';
+        const mins = Math.floor(time / 60);
+        const secs = Math.floor(time % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+      };
+      setCurrentTime(formatTime(current));
+      setDuration(formatTime(total));
+    };
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setProgress(0);
+      setCurrentTime('0:00');
+    };
+    audio.addEventListener('timeupdate', updateProgress);
+    audio.addEventListener('ended', handleEnded);
+    return () => {
+      audio.removeEventListener('timeupdate', updateProgress);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, []);
 
   
   // Fetch search results from SoundCloud or fallback to popular badminton jam
@@ -93,7 +124,7 @@ const SoundCloudDynamicIsland = () => {
         className="absolute top-0 right-0 z-50 overflow-hidden bg-zinc-950/90 border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-md rounded-[28px] focus-within:border-indigo-500/50"
         animate={{
           width: isSearching ? 320 : 310,
-          height: isSearching ? 380 : 54,
+          height: isSearching ? 380 : 64,
         }}
         transition={{ type: "spring", stiffness: 350, damping: 25 }}
       >
@@ -105,9 +136,9 @@ const SoundCloudDynamicIsland = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="flex items-center justify-between h-full px-4 text-white"
+              className="flex flex-col justify-center h-full px-4 text-white relative"
             >
-              {/* Cover Art / Waveform animation */}
+              <div className="flex items-center justify-between w-full">{/* Cover Art / Waveform animation */}
               <div className="flex items-center gap-2 max-w-[150px]">
                 <img 
                   src={currentTrack.artwork_url} 
@@ -145,7 +176,16 @@ const SoundCloudDynamicIsland = () => {
                   <Search size={16} />
                 </button>
               </div>
-            </motion.div>
+            </div>
+            {/* Progress Bar */}
+            <div className="flex items-center gap-2 w-full mt-1.5 px-0.5">
+              <span className="text-[9px] text-zinc-400 font-medium w-6 text-right">{currentTime}</span>
+              <div className="flex-1 h-1 bg-white/20 rounded-full overflow-hidden">
+                <div className="h-full bg-white rounded-full transition-all duration-300 ease-linear" style={{ width: `${progress}%` }} />
+              </div>
+              <span className="text-[9px] text-zinc-400 font-medium w-6">{duration}</span>
+            </div>
+          </motion.div>
           ) : (
             /* ================= STATE 2: SEARCH MODE (EXPAANDED PANEL) ================= */
             <motion.div
