@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactPlayer from 'react-player';
 import { Play, Pause, Search, ArrowLeft, Music, SkipForward, SkipBack } from 'lucide-react';
 
 const SC_PLAYLIST = [
-  { id: 1, title: 'Montagem Tomada x Dame Un Grrr', artist: 'Danna Jo', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/1gm6vpQ/stream?app_name=BuluTangkisApp', artwork_url: 'https://audius-content-10.figment.io/content/01JZPC618C3Z1CZXEGDJPN6V2R/150x150.jpg' },
-  { id: 2, title: 'MEMPHIS - PHONK', artist: 'LAIMON 👨🏻‍🚀', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/wGxZ2/stream?app_name=BuluTangkisApp', artwork_url: 'https://val004.open-audio-validator.com/content/Qmaj3yQNMba6ouXcSyV3JHZhucZX4rHyP8faqU4CWV89ma/150x150.jpg' },
-  { id: 3, title: 'Ecco Phonk', artist: 'Weaver Beats', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/NlV7dpp/stream?app_name=BuluTangkisApp', artwork_url: 'https://v.monophonic.digital/content/01JB0V3ZKMVGMVGVF8J3J50F0V/150x150.jpg' },
-  { id: 4, title: 'I Tried Phonk', artist: 'Trvpinstein Beats', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/6kOvR7Z/stream?app_name=BuluTangkisApp', artwork_url: 'https://v.monophonic.digital/content/Qmba7PosQf6W9NKF4toqP5fAQbPAzpHgyH6PhjDoQ8kKeL/150x150.jpg' },
-  { id: 5, title: 'Phree Phonk', artist: 'OJ TOMI', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/yyAxrWr/stream?app_name=BuluTangkisApp', artwork_url: 'https://audius-creator-13.theblueprint.xyz/content/01JYKQAHRYWX0Z2EMK830JSJ3Q/150x150.jpg' },
-  { id: 6, title: 'Tholy Phonk', artist: 'THOLY', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/2l62pqp/stream?app_name=BuluTangkisApp', artwork_url: 'https://audius-creator-11.theblueprint.xyz/content/01K2J7SHKZ1VK3M17G965FPD9Y/150x150.jpg' },
-  { id: 7, title: '1995 (PHONK REMIX)', artist: 'Music Altern Dj', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/qZYjoYM/stream?app_name=BuluTangkisApp', artwork_url: 'https://audius-content-13.figment.io/content/01KD6DVGWQ5MVFH5RSBG6RP234/150x150.jpg' },
-  { id: 8, title: 'METATRADER Phonk', artist: 'Phonkid Prod', stream_url: 'https://discoveryprovider.audius.co/v1/tracks/5jlM7/stream?app_name=BuluTangkisApp', artwork_url: 'https://v.monophonic.digital/content/QmULVrHFbbmaELAbz6BqmjacpuxEXWBQJVhfxRxYZV4GN3/150x150.jpg' }
+  { id: 1, title: 'Acido Funk (Slowed)', artist: 'Jahson Medina', stream_url: 'https://soundcloud.com/jahson-medina/acido-funk-slowed', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
+  { id: 2, title: 'Swaggin at the Partment (Slowed)', artist: 'Ghostfaceplaya', stream_url: 'https://soundcloud.com/ghostfaceplaya/swaggin-at-the-partment-slowed', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
+  { id: 3, title: 'Enough Slay (Mega Phonk Mashup)', artist: 'Jerberlazaro', stream_url: 'https://soundcloud.com/jerberlazaromusic/eternxlkz-enough-slay-tiktok-mega-phonk-mashup', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
+  { id: 4, title: 'Avangard (Slowed)', artist: 'Lonown', stream_url: 'https://soundcloud.com/lonown6/avangard-slowed', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
+  { id: 5, title: 'Andromeda & KVRXD - No Fear', artist: 'Tribal Trap', stream_url: 'https://soundcloud.com/tribaltrapmusic/andromeda-kvrxd-no-fear', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
+  { id: 6, title: 'Mortals (Funk Remix)', artist: 'LXNGVX & Warriyo', stream_url: 'https://soundcloud.com/nocopyrightsounds/lxngvx-warriyo-mortals-funk-remix-ncs-release', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
+  { id: 7, title: 'Montagem Game (Super Slowed)', artist: 'Thibaud21', stream_url: 'https://soundcloud.com/thibaud21lol/montagem-game-super-slowed-par', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' },
+  { id: 8, title: 'Montagem Tenta', artist: 'RandomFunkBR', stream_url: 'https://soundcloud.com/randomfunkbr9/montagem-tenta-1', artwork_url: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=80&q=80' }
 ];
 
 const SoundCloudDynamicIsland = () => {
@@ -23,8 +24,6 @@ const SoundCloudDynamicIsland = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [played, setPlayed] = useState(0);
-  
-  const audioRef = useRef(null);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -37,26 +36,6 @@ const SoundCloudDynamicIsland = () => {
       setSearchResults(filtered);
     }
   }, [searchQuery]);
-
-  // Sync isPlaying state with native audio element
-  useEffect(() => {
-    if (!audioRef.current) return;
-    
-    if (isPlaying) {
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.error("Play prevented:", error);
-          // Only force pause state if it's a true rejection, not an abort
-          if (error.name !== 'AbortError') {
-            setIsPlaying(false);
-          }
-        });
-      }
-    } else {
-      audioRef.current.pause();
-    }
-  }, [isPlaying, currentTrack]);
 
   const formatTime = (seconds) => {
     if (!seconds || isNaN(seconds)) return '0:00';
@@ -87,15 +66,37 @@ const SoundCloudDynamicIsland = () => {
 
   return (
     <div className="relative">
-      {/* NATIVE HTML5 AUDIO ELEMENT (No ReactPlayer iframe bugs!) */}
-      <audio
-        ref={audioRef}
-        src={currentTrack.stream_url}
-        onTimeUpdate={() => setPlayed(audioRef.current?.currentTime || 0)}
-        onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}
-        onEnded={nextTrack}
-        preload="auto"
-      />
+      {/* 
+        THE SC WIDGET TRICK: 
+        SoundCloud blocks iframes that are 1x1 or display:none.
+        So we make it 300x300, but put it BEHIND the dynamic island 
+        with extreme low opacity so it's "visible" to the browser but invisible to the user.
+      */}
+      <div style={{ position: 'absolute', top: 0, right: 0, width: '300px', height: '300px', opacity: 0.001, pointerEvents: 'none', zIndex: -10 }}>
+        <ReactPlayer 
+          url={currentTrack.stream_url} 
+          playing={isPlaying} 
+          controls={false}
+          width="100%"
+          height="100%"
+          onDuration={(d) => setDuration(d)}
+          onProgress={(p) => setPlayed(p.playedSeconds)}
+          onEnded={nextTrack}
+          onError={(e) => {
+            console.error("Audio Player Error:", e);
+            setIsPlaying(false);
+          }}
+          config={{
+            soundcloud: {
+              options: {
+                auto_play: false,
+                hide_related: true,
+                visual: false
+              }
+            }
+          }}
+        />
+      </div>
 
       {/* DYNAMIC ISLAND UI */}
       <motion.div
@@ -120,7 +121,7 @@ const SoundCloudDynamicIsland = () => {
                   />
                   <div className="flex flex-col truncate">
                     <span className="text-xs font-bold truncate text-white">{currentTrack.title}</span>
-                    <span className="text-[10px] text-zinc-400 truncate tracking-wider">AUDIUS</span>
+                    <span className="text-[10px] text-zinc-400 truncate tracking-wider">SOUNDCLOUD</span>
                   </div>
                 </div>
 
