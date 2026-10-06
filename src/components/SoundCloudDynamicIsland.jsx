@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactPlayer from 'react-player';
 import { Play, Pause, Search, ArrowLeft, Music, SkipForward, SkipBack } from 'lucide-react';
 
 const SoundCloudDynamicIsland = () => {
@@ -17,38 +18,31 @@ const SoundCloudDynamicIsland = () => {
     artwork_url: "https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=80&q=80" // Placeholder SC logo/artwork
   });
   const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef(new Audio()); // Playback engine
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState('0:00');
-  const [duration, setDuration] = useState('0:30');
+  const [duration, setDuration] = useState('0:00');
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    const updateProgress = () => {
-      const current = audio.currentTime;
-      const total = audio.duration || 30;
-      setProgress((current / total) * 100);
-      const formatTime = (time) => {
-        if (isNaN(time)) return '0:00';
-        const mins = Math.floor(time / 60);
-        const secs = Math.floor(time % 60);
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
-      };
-      setCurrentTime(formatTime(current));
-      setDuration(formatTime(total));
-    };
-    const handleEnded = () => {
-      setIsPlaying(false);
-      setProgress(0);
-      setCurrentTime('0:00');
-    };
-    audio.addEventListener('timeupdate', updateProgress);
-    audio.addEventListener('ended', handleEnded);
-    return () => {
-      audio.removeEventListener('timeupdate', updateProgress);
-      audio.removeEventListener('ended', handleEnded);
-    };
-  }, []);
+  const formatTime = (time) => {
+    if (isNaN(time)) return '0:00';
+    const mins = Math.floor(time / 60);
+    const secs = Math.floor(time % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleProgress = (state) => {
+    setProgress(state.played * 100);
+    setCurrentTime(formatTime(state.playedSeconds));
+  };
+
+  const handleDuration = (dur) => {
+    setDuration(formatTime(dur));
+  };
+
+  const handleEnded = () => {
+    setIsPlaying(false);
+    setProgress(0);
+    setCurrentTime('0:00');
+  };
 
   
   // Fetch search results from SoundCloud or fallback to popular badminton jam
@@ -93,33 +87,27 @@ const SoundCloudDynamicIsland = () => {
   }, [searchQuery]);
 
   // Player controls
-  const togglePlay = () => {
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      // Direct SC stream URL might need client ID. Make sure it plays if loaded.
-      if (currentTrack.stream_url) {
-        audioRef.current.src = currentTrack.stream_url;
-        audioRef.current.play().catch(() => console.log('Playing demo...'));
-      }
-    }
-    setIsPlaying(!isPlaying);
-  };
+  const togglePlay = () => setIsPlaying(!isPlaying);
 
   const handleSelectTrack = (track) => {
     setCurrentTrack(track);
     setIsSearching(false);
     setSearchQuery('');
-    // Try to auto-play track (will fail without audio stream permissions/Client ID, in which case it mimics play state)
-    if (track.stream_url) {
-      audioRef.current.src = track.stream_url;
-      audioRef.current.play().catch(() => console.log('Mock selected'));
-    }
     setIsPlaying(true);
   };
 
   return (
     <div className="relative">
+      <ReactPlayer 
+        url={currentTrack.stream_url} 
+        playing={isPlaying} 
+        onProgress={handleProgress} 
+        onDuration={handleDuration} 
+        onEnded={handleEnded} 
+        width="0" 
+        height="0" 
+        style={{ display: 'none' }} 
+      />
       <motion.div
         className="absolute top-0 right-0 z-50 overflow-hidden bg-zinc-950/90 border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-md rounded-[28px] focus-within:border-indigo-500/50"
         animate={{
@@ -155,7 +143,7 @@ const SoundCloudDynamicIsland = () => {
                         <span className="w-[2px] h-full bg-emerald-400 animate-[bounce_0.8s_infinite] [animation-delay:0.5s]" />
                       </div>
                     )}
-                    <span className="text-[10px] text-zinc-400 truncate">SoundCloud</span>
+                    <span className="text-[10px] text-zinc-400 truncate">YouTube</span>
                   </div>
                 </div>
               </div>
@@ -208,7 +196,7 @@ const SoundCloudDynamicIsland = () => {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Cari lagu di SoundCloud..."
+                    placeholder="Cari lagu di YouTube..."
                     className="w-full bg-white/5 border border-white/10 rounded-full pl-8 pr-3 py-1 text-xs text-white focus:outline-none focus:border-indigo-500 transition"
                     autoFocus
                   />
@@ -221,7 +209,7 @@ const SoundCloudDynamicIsland = () => {
                 {isLoading ? (
                   <div className="flex flex-col items-center justify-center h-28 text-zinc-500 text-xs gap-2">
                     <span className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
-                    <span>Mencari di SoundCloud...</span>
+                    <span>Mencari di YouTube...</span>
                   </div>
                 ) : searchResults.length > 0 ? (
                   searchResults.map((track) => (
