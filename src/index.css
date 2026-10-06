@@ -76,6 +76,12 @@
     --jr-text: #334155 !important;
   }
 
+  /* BranchedMenu light mode fixes */
+  html:not(.dark) .branched-menu {
+    --bm-ink: #1e293b !important;
+    --bm-line: rgba(0, 0, 0, 0.25) !important;
+  }
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
