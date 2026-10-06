@@ -36,13 +36,9 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggleTheme}
       className={`
-        relative flex items-center w-[68px] h-[34px] rounded-full p-1 cursor-pointer transition-colors duration-300
-        ${isDark ? 'bg-white/10 justify-start shadow-[inset_0_2px_8px_rgba(0,0,0,0.5)]' : 'bg-black/10 justify-end shadow-[inset_0_2px_8px_rgba(0,0,0,0.1)]'}
+        liquid-pill relative flex items-center w-[68px] h-[34px] rounded-full p-1 cursor-pointer
+        ${isDark ? 'justify-start' : 'justify-end'}
       `}
-      style={{
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-      }}
       aria-label="Toggle Theme"
     >
       <motion.div

@@ -172,7 +172,7 @@ export default function SetupPage() {
           <button
             onClick={handleResetSession}
             disabled={isResetting || !sessionId}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-all text-sm font-semibold disabled:opacity-50"
+            className="liquid-pill flex items-center gap-2 px-5 py-2.5 rounded-full text-red-400 hover:text-red-300 transition-all text-sm font-semibold disabled:opacity-50"
           >
             {isResetting ? (
               <div className="w-4 h-4 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin" />
@@ -211,9 +211,9 @@ export default function SetupPage() {
                 const selectedCourts = value === '1 Lapangan' ? 1 : 2;
                 setFieldCount(selectedCourts);
               }}
-              chipColor="rgba(255, 255, 255, 0.05)" 
+              chipColor="rgba(255, 255, 255, 0.14)" 
               activeColor="#4f46e5" 
-              textColor="#a1a1aa" 
+              textColor="#e4e4e7" 
               activeTextColor="#ffffff"
               size="xl"
               gap={12}
@@ -270,7 +270,7 @@ export default function SetupPage() {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0, y: -20, transition: { duration: 0.2 } }}
                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                    className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5"
+                    className="liquid-pill flex items-center gap-2 rounded-full px-4 py-1.5"
                   >
                     <span className="text-white/90 text-sm font-medium">{player}</span>
                     <button
@@ -297,7 +297,7 @@ export default function SetupPage() {
                   <button
                     key={idx}
                     onClick={() => addHistoricalPlayer(p)}
-                    className="text-xs bg-white/5 border border-white/5 hover:border-accent-blue/40 hover:bg-accent-blue/10 text-white/50 hover:text-white px-3 py-1.5 rounded-full transition-all duration-200"
+                    className="liquid-pill text-xs text-white/70 hover:text-white px-3 py-1.5 rounded-full"
                   >
                     + {p}
                   </button>
@@ -355,7 +355,7 @@ export default function SetupPage() {
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm text-white/70">
-                <thead className="bg-[#15151e] text-white/50 border-b border-white/10 uppercase text-xs">
+                <thead className="bg-white/10 text-white/50 border-b border-white/10 uppercase text-xs">
                   <tr>
                     <th className="px-4 py-3 font-semibold rounded-tl-lg">Pemain</th>
                     <th className="px-4 py-3 font-semibold text-center">Pertandingan</th>
